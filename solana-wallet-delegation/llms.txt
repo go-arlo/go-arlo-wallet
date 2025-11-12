@@ -1,0 +1,444 @@
+# Turnkey
+
+## Docs
+
+- [Approve activity](https://docs.turnkey.com/api-reference/activities/approve-activity.md): Approve an activity.
+- [Create API keys](https://docs.turnkey.com/api-reference/activities/create-api-keys.md): Add API keys to an existing user.
+- [Create authenticators](https://docs.turnkey.com/api-reference/activities/create-authenticators.md): Create authenticators to authenticate requests to Turnkey.
+- [Create invitations](https://docs.turnkey.com/api-reference/activities/create-invitations.md): Create invitations to join an existing organization.
+- [Create Oauth providers](https://docs.turnkey.com/api-reference/activities/create-oauth-providers.md): Create Oauth providers for a specified user.
+- [Create policies](https://docs.turnkey.com/api-reference/activities/create-policies.md): Create new policies.
+- [Create policy](https://docs.turnkey.com/api-reference/activities/create-policy.md): Create a new policy.
+- [Create private key tag](https://docs.turnkey.com/api-reference/activities/create-private-key-tag.md): Create a private key tag and add it to private keys.
+- [Create private keys](https://docs.turnkey.com/api-reference/activities/create-private-keys.md): Create new private keys.
+- [Create read only session](https://docs.turnkey.com/api-reference/activities/create-read-only-session.md): Create a read only session for a user (valid for 1 hour).
+- [Create read write session](https://docs.turnkey.com/api-reference/activities/create-read-write-session.md): Create a read write session for a user.
+- [Create smart contract interface](https://docs.turnkey.com/api-reference/activities/create-smart-contract-interface.md): Create an ABI/IDL in JSON.
+- [Create sub-organization](https://docs.turnkey.com/api-reference/activities/create-sub-organization.md): Create a new sub-organization.
+- [Create user tag](https://docs.turnkey.com/api-reference/activities/create-user-tag.md): Create a user tag and add it to users.
+- [Create users](https://docs.turnkey.com/api-reference/activities/create-users.md): Create users in an existing organization.
+- [Create wallet](https://docs.turnkey.com/api-reference/activities/create-wallet.md): Create a wallet and derive addresses.
+- [Create wallet accounts](https://docs.turnkey.com/api-reference/activities/create-wallet-accounts.md): Derive additional addresses using an existing wallet.
+- [Delete API keys](https://docs.turnkey.com/api-reference/activities/delete-api-keys.md): Remove api keys from a user.
+- [Delete authenticators](https://docs.turnkey.com/api-reference/activities/delete-authenticators.md): Remove authenticators from a user.
+- [Delete invitation](https://docs.turnkey.com/api-reference/activities/delete-invitation.md): Delete an existing invitation.
+- [Delete Oauth providers](https://docs.turnkey.com/api-reference/activities/delete-oauth-providers.md): Remove Oauth providers for a specified user.
+- [Delete policy](https://docs.turnkey.com/api-reference/activities/delete-policy.md): Delete an existing policy.
+- [Delete private key tags](https://docs.turnkey.com/api-reference/activities/delete-private-key-tags.md): Delete private key tags within an organization.
+- [Delete private keys](https://docs.turnkey.com/api-reference/activities/delete-private-keys.md): Delete private keys for an organization.
+- [Delete smart contract interface](https://docs.turnkey.com/api-reference/activities/delete-smart-contract-interface.md): Delete a smart contract interface.
+- [Delete sub-organization](https://docs.turnkey.com/api-reference/activities/delete-sub-organization.md): Delete a sub-organization.
+- [Delete user tags](https://docs.turnkey.com/api-reference/activities/delete-user-tags.md): Delete user tags within an organization.
+- [Delete users](https://docs.turnkey.com/api-reference/activities/delete-users.md): Delete users within an organization.
+- [Delete wallets](https://docs.turnkey.com/api-reference/activities/delete-wallets.md): Delete wallets for an organization.
+- [Export private key](https://docs.turnkey.com/api-reference/activities/export-private-key.md): Export a private key.
+- [Export wallet](https://docs.turnkey.com/api-reference/activities/export-wallet.md): Export a wallet.
+- [Export wallet account](https://docs.turnkey.com/api-reference/activities/export-wallet-account.md): Export a wallet account.
+- [Import private key](https://docs.turnkey.com/api-reference/activities/import-private-key.md): Import a private key.
+- [Import wallet](https://docs.turnkey.com/api-reference/activities/import-wallet.md): Import a wallet.
+- [Init email recovery](https://docs.turnkey.com/api-reference/activities/init-email-recovery.md): Initialize a new email recovery.
+- [Init fiat on ramp](https://docs.turnkey.com/api-reference/activities/init-fiat-on-ramp.md): Initiate a fiat on ramp flow.
+- [Init generic OTP](https://docs.turnkey.com/api-reference/activities/init-generic-otp.md): Initiate a generic OTP activity.
+- [Init import private key](https://docs.turnkey.com/api-reference/activities/init-import-private-key.md): Initialize a new private key import.
+- [Init import wallet](https://docs.turnkey.com/api-reference/activities/init-import-wallet.md): Initialize a new wallet import.
+- [Init OTP auth](https://docs.turnkey.com/api-reference/activities/init-otp-auth.md): Initiate an OTP auth activity.
+- [Login with a stamp](https://docs.turnkey.com/api-reference/activities/login-with-a-stamp.md): Create a session for a user through stamping client side (API key, wallet client, or passkey client).
+- [Login with Oauth](https://docs.turnkey.com/api-reference/activities/login-with-oauth.md): Create an Oauth session for a user.
+- [Login with OTP](https://docs.turnkey.com/api-reference/activities/login-with-otp.md): Create an OTP session for a user.
+- [Oauth](https://docs.turnkey.com/api-reference/activities/oauth.md): Authenticate a user with an OIDC token (Oauth).
+- [OTP auth](https://docs.turnkey.com/api-reference/activities/otp-auth.md): Authenticate a user with an OTP code sent via email or SMS.
+- [Activities](https://docs.turnkey.com/api-reference/activities/overview.md): Activities are requests to securely execute a workload in Turnkey.
+- [Perform email auth](https://docs.turnkey.com/api-reference/activities/perform-email-auth.md): Authenticate a user via email.
+- [Recover a user](https://docs.turnkey.com/api-reference/activities/recover-a-user.md): Complete the process of recovering a user by adding an authenticator.
+- [Reject activity](https://docs.turnkey.com/api-reference/activities/reject-activity.md): Reject an activity.
+- [Remove organization feature](https://docs.turnkey.com/api-reference/activities/remove-organization-feature.md): Remove an organization feature. This activity must be approved by the current root quorum.
+- [Set organization feature](https://docs.turnkey.com/api-reference/activities/set-organization-feature.md): Set an organization feature. This activity must be approved by the current root quorum.
+- [Sign raw payload](https://docs.turnkey.com/api-reference/activities/sign-raw-payload.md): Sign a raw payload.
+- [Sign raw payloads](https://docs.turnkey.com/api-reference/activities/sign-raw-payloads.md): Sign multiple raw payloads with the same signing parameters.
+- [Sign transaction](https://docs.turnkey.com/api-reference/activities/sign-transaction.md): Sign a transaction.
+- [Update policy](https://docs.turnkey.com/api-reference/activities/update-policy.md): Update an existing policy.
+- [Update private key tag](https://docs.turnkey.com/api-reference/activities/update-private-key-tag.md): Update human-readable name or associated private keys. Note that this activity is atomic: all of the updates will succeed at once, or all of them will fail.
+- [Update root quorum](https://docs.turnkey.com/api-reference/activities/update-root-quorum.md): Set the threshold and members of the root quorum. This activity must be approved by the current root quorum.
+- [Update user](https://docs.turnkey.com/api-reference/activities/update-user.md): Update a user in an existing organization.
+- [Update user tag](https://docs.turnkey.com/api-reference/activities/update-user-tag.md): Update human-readable name or associated users. Note that this activity is atomic: all of the updates will succeed at once, or all of them will fail.
+- [Update user's email](https://docs.turnkey.com/api-reference/activities/update-users-email.md): Update a user's email in an existing organization.
+- [Update user's name](https://docs.turnkey.com/api-reference/activities/update-users-name.md): Update a user's name in an existing organization.
+- [Update user's phone number](https://docs.turnkey.com/api-reference/activities/update-users-phone-number.md): Update a user's phone number in an existing organization.
+- [Update wallet](https://docs.turnkey.com/api-reference/activities/update-wallet.md): Update a wallet for an organization.
+- [Verify generic OTP](https://docs.turnkey.com/api-reference/activities/verify-generic-otp.md): Verify a generic OTP.
+- [API reference](https://docs.turnkey.com/api-reference/overview.md): Review our [API Introduction](/developer-reference/api-overview/intro) to get started.
+- [Get activity](https://docs.turnkey.com/api-reference/queries/get-activity.md): Get details about an activity.
+- [Get API key](https://docs.turnkey.com/api-reference/queries/get-api-key.md): Get details about an API key.
+- [Get API keys](https://docs.turnkey.com/api-reference/queries/get-api-keys.md): Get details about API keys for a user.
+- [Get authenticator](https://docs.turnkey.com/api-reference/queries/get-authenticator.md): Get details about an authenticator.
+- [Get authenticators](https://docs.turnkey.com/api-reference/queries/get-authenticators.md): Get details about authenticators for a user.
+- [Get configs](https://docs.turnkey.com/api-reference/queries/get-configs.md): Get quorum settings and features for an organization.
+- [Get Oauth providers](https://docs.turnkey.com/api-reference/queries/get-oauth-providers.md): Get details about Oauth providers for a user.
+- [Get policy](https://docs.turnkey.com/api-reference/queries/get-policy.md): Get details about a policy.
+- [Get policy evaluations](https://docs.turnkey.com/api-reference/queries/get-policy-evaluations.md): Get the policy evaluations for an activity.
+- [Get private key](https://docs.turnkey.com/api-reference/queries/get-private-key.md): Get details about a private key.
+- [Get smart contract interface](https://docs.turnkey.com/api-reference/queries/get-smart-contract-interface.md): Get details about a smart contract interface.
+- [Get sub-organizations](https://docs.turnkey.com/api-reference/queries/get-sub-organizations.md): Get all suborg IDs associated given a parent org ID and an optional filter.
+- [Get user](https://docs.turnkey.com/api-reference/queries/get-user.md): Get details about a user.
+- [Get verified sub-organizations](https://docs.turnkey.com/api-reference/queries/get-verified-sub-organizations.md): Get all email or phone verified suborg IDs associated given a parent org ID.
+- [Get wallet](https://docs.turnkey.com/api-reference/queries/get-wallet.md): Get details about a wallet.
+- [Get wallet account](https://docs.turnkey.com/api-reference/queries/get-wallet-account.md): Get a single wallet account.
+- [List activities](https://docs.turnkey.com/api-reference/queries/list-activities.md): List all activities within an organization.
+- [List policies](https://docs.turnkey.com/api-reference/queries/list-policies.md): List all policies within an organization.
+- [List private key tags](https://docs.turnkey.com/api-reference/queries/list-private-key-tags.md): List all private key tags within an organization.
+- [List private keys](https://docs.turnkey.com/api-reference/queries/list-private-keys.md): List all private keys within an organization.
+- [List smart contract interfaces](https://docs.turnkey.com/api-reference/queries/list-smart-contract-interfaces.md): List all smart contract interfaces within an organization.
+- [List user tags](https://docs.turnkey.com/api-reference/queries/list-user-tags.md): List all user tags within an organization.
+- [List users](https://docs.turnkey.com/api-reference/queries/list-users.md): List all users within an organization.
+- [List wallets](https://docs.turnkey.com/api-reference/queries/list-wallets.md): List all wallets within an organization.
+- [List wallets accounts](https://docs.turnkey.com/api-reference/queries/list-wallets-accounts.md): List all accounts within a wallet.
+- [Queries](https://docs.turnkey.com/api-reference/queries/overview.md): Queries are read requests to Turnkey's API. They allow you to retrieve data about your organization and its resources.
+- [Who am I?](https://docs.turnkey.com/api-reference/queries/who-am-i.md): Get basic information about your current API or WebAuthN user and their organization. Affords sub-organization look ups via parent organization for WebAuthN or API key users.
+- [Backend Authentication](https://docs.turnkey.com/authentication/backend-setup.md): Guide for integrating Turnkey authentication into your backend, covering session JWT creation, validation, and enforcing user access controls.
+- [Credentials](https://docs.turnkey.com/authentication/credentials.md): An overview of credentials and how they're used with various authentication methods
+- [Email auth & recovery](https://docs.turnkey.com/authentication/email.md): Email Authentication enables users to authenticate and recover their Turnkey accounts using email-based verification. There are two methods of email authentication:
+- [Overview](https://docs.turnkey.com/authentication/overview.md): Learn about supported authentication methods for Turnkey, how to add them, and usage details.
+- [Discoverable vs. Non-Discoverable](https://docs.turnkey.com/authentication/passkeys/discoverable-vs-non-discoverable.md): Also known as "resident" vs. "non-resident" credentials. From [the spec](https://www.w3.org/TR/webauthn-2/)
+- [Integrating Passkeys](https://docs.turnkey.com/authentication/passkeys/integration.md)
+- [Introduction to Passkeys](https://docs.turnkey.com/authentication/passkeys/introduction.md): Passkeys are born out of a new standard being pushed by major industry players: Apple and Google.
+- [Native Passkeys](https://docs.turnkey.com/authentication/passkeys/native.md): If you're unfamiliar with passkeys broadly, head to  for an overview. TL;DR: passkeys are cryptographic key pairs generated and stored on secure hardware. Typically this is your Mac's or iPhone's , your Android's , or an external security key plugged in via USB.
+- [Passkey Options](https://docs.turnkey.com/authentication/passkeys/options.md): Whether you use the raw browser APIs or one of our helpers you'll have flexibility to set your own registration and authentication options. This page provides an overview and some recommendations related to these options.
+- [Proxying signed requests](https://docs.turnkey.com/authentication/proxying-signed-requests.md): Turnkey has an open CORS policy for its public API. This means your frontend can choose to POST sign requests straight to `https://api.turnkey.com`. Your frontend can also choose to forward the requests via a backend server (which POSTs the signed request to Turnkey).
+- [Sessions](https://docs.turnkey.com/authentication/sessions.md): Turnkey sessions allow a user to take multiple, contiguous actions in a defined period of time.
+- [SMS authentication](https://docs.turnkey.com/authentication/sms.md): SMS authentication enables users to authenticate their Turnkey account using their phone number via a 6-9 digit or bech32 alphanumeric one-time password (OTP). When authenticated, users receive an expiring API key stored in memory within an iframe, which functions like a session key to access their wallet.
+- [Social logins](https://docs.turnkey.com/authentication/social-logins.md): Social logins provide a familiar and convenient way for users to access applications using their existing accounts from popular platforms like Google, Apple, Facebook, X/Twitter, etc. Under the hood, this functionality is powered by OAuth - a robust auth protocol which enables secure user verification through OpenID Connect ([OIDC](https://openid.net/specs/openid-connect-core-1_0.html)) tokens. This feature is available exclusively for sub-organization users.
+- [Advanced](https://docs.turnkey.com/category/advanced.md): Use Turnkey's low-level http libraries directly
+- [Code examples](https://docs.turnkey.com/category/code-examples.md)
+- [Code examples](https://docs.turnkey.com/category/code-examples-1.md)
+- [Security & Architecture](https://docs.turnkey.com/category/security.md): Learn how Turnkey achieves innovative, cloud scale, no single point of failure security.
+- [Web3 libraries](https://docs.turnkey.com/category/web3-libraries.md): Turnkey Web3 libraries
+- [API Key Stamper](https://docs.turnkey.com/changelogs/api-key-stamper/readme.md)
+- [Cosmjs](https://docs.turnkey.com/changelogs/cosmjs/readme.md)
+- [Crypto](https://docs.turnkey.com/changelogs/crypto/readme.md)
+- [Dart](https://docs.turnkey.com/changelogs/dart/readme.md)
+- [Eip 1193 Provider](https://docs.turnkey.com/changelogs/eip-1193-provider/readme.md)
+- [Encoding](https://docs.turnkey.com/changelogs/encoding/readme.md)
+- [Ethers](https://docs.turnkey.com/changelogs/ethers/readme.md)
+- [Go](https://docs.turnkey.com/changelogs/golang/readme.md)
+- [Http](https://docs.turnkey.com/changelogs/http/readme.md)
+- [Iframe Stamper](https://docs.turnkey.com/changelogs/iframe-stamper/readme.md)
+- [React Native Passkey Stamper](https://docs.turnkey.com/changelogs/react-native-passkey-stamper/readme.md)
+- [SDK Browser](https://docs.turnkey.com/changelogs/sdk-browser/readme.md)
+- [SDK React Native](https://docs.turnkey.com/changelogs/sdk-react-native/readme.md)
+- [SDK React](https://docs.turnkey.com/changelogs/sdk-react/readme.md)
+- [SDK Server](https://docs.turnkey.com/changelogs/sdk-server/readme.md)
+- [Solana](https://docs.turnkey.com/changelogs/solana/readme.md)
+- [Telegram Cloud Storage Stamper](https://docs.turnkey.com/changelogs/telegram-cloud-storage-stamper/readme.md)
+- [Viem](https://docs.turnkey.com/changelogs/viem/readme.md)
+- [Wallet Stamper](https://docs.turnkey.com/changelogs/wallet-stamper/readme.md)
+- [Webauthn Stamper](https://docs.turnkey.com/changelogs/webauthn-stamper/readme.md)
+- [Organizations](https://docs.turnkey.com/concepts/organizations.md): An organization is a logical grouping of resources (e.g. users, policies, wallets). These resources can only be accessed by authorized and permissioned users within the organization. Resources are not shared between organizations.
+- [Overview](https://docs.turnkey.com/concepts/overview.md): Turnkey is flexible, scalable, and secure wallet infrastructure that can be used for transaction automation (e.g., payments flows, smart contract management), or non-custodial embedded wallets. Turnkey offers low-level primitives that can be combined to accomplish a variety of goals.
+- [Server-side Delegated Access setup](https://docs.turnkey.com/concepts/policies/delegated-access-backend.md): Step by step implementation of the delegated access entirely server-side
+- [Client-side Delegated Access setup](https://docs.turnkey.com/concepts/policies/delegated-access-frontend.md): Step-by-step guide for adding Delegated Access users and policies entirely client-side
+- [Overview](https://docs.turnkey.com/concepts/policies/delegated-access-overview.md): With Turnkey you can create multi-user accounts with flexible co-ownership controls. This primitive enables you to establish delegated access to a user’s wallet, reducing or removing the need for them to manually approve each action. You can provide a smoother user experience while ensuring that end-users maintain full control over their wallets.
+- [Access control](https://docs.turnkey.com/concepts/policies/examples/access-control.md): This page provides examples of policies governing access.
+- [Bitcoin](https://docs.turnkey.com/concepts/policies/examples/bitcoin.md): This page provides examples of policies governing signing.
+- [Ethereum](https://docs.turnkey.com/concepts/policies/examples/ethereum.md): This page provides examples of policies governing signing.
+- [Signing control](https://docs.turnkey.com/concepts/policies/examples/signing-control.md): This page provides examples of policies governing signing.
+- [Solana](https://docs.turnkey.com/concepts/policies/examples/solana.md): This page provides examples of policies governing signing.
+- [Tron](https://docs.turnkey.com/concepts/policies/examples/tron.md): This page provides examples of policies governing signing.
+- [Policy language](https://docs.turnkey.com/concepts/policies/language.md): This page provides an overview of how to author policies using our policy language. To begin, we'll need to get familiar with the language's grammar, keywords, and types.
+- [Policy overview](https://docs.turnkey.com/concepts/policies/overview.md): Our policy engine is the foundation for flexible controls and permissions within your organization. This page provides an overview of how to author policies.
+- [Policy quickstart](https://docs.turnkey.com/concepts/policies/quickstart.md): This guide will help you add an additional user to your Turnkey organization and set permissions for that user through Policies. Specifically, we will create an API-only user with permissions to sign transactions to an allowlisted address.
+- [Smart contract interfaces — ABIs & IDLs](https://docs.turnkey.com/concepts/policies/smart-contract-interfaces.md): This page provides an overview of the Policy Engine's support for parsing calls to Smart Contracts on Ethereum and Programs on Solana by uploading the JSON respresentation of the respective ABI (Ethereum) or IDL (Solana)
+- [Resource limits](https://docs.turnkey.com/concepts/resource-limits.md): Learn more about how to structure your implementation to avoid resource limits.
+- [Sub-organizations](https://docs.turnkey.com/concepts/sub-organizations.md): Using Turnkey's flexible infrastructure, you can programmatically create and manage sub-organizations for your end-users. Sub-organizations aren't subject to size limits: you can create as many sub-organizations as needed. The parent organization has **read-only** visibility into all of its sub-organizations, and activities performed in sub-organizations roll up to the parent for billing purposes.
+- [Credentials](https://docs.turnkey.com/concepts/users/credentials.md): Credentials represent ways for Users to authenticate to Turnkey. All Turnkey Credentials are held by you, the end-user. Turnkey only keeps **public keys**.
+- [Introduction to users](https://docs.turnkey.com/concepts/users/introduction.md): Turnkey users are resources within organizations or sub-organizations that can submit activities to Turnkey via a valid credential (e.g., API key, passkey).
+- [Root Quorum](https://docs.turnkey.com/concepts/users/root-quorum.md): When you create a Turnkey organization, your user is created and will default to being the sole member of the root quorum. Because of the wide scope of permissions, it is important to take care when using any users in the root quorum. The following offers a technical overview and some best practices.
+- [Wallets](https://docs.turnkey.com/concepts/wallets.md): A [hierarchical deterministic (HD) wallet](https://learnmeabitcoin.com/technical/hd-wallets) is a collection of cryptographic private/public key pairs that share a common seed. A wallet is used to generate accounts.
+- [Use Turnkey wallets with 0x](https://docs.turnkey.com/cookbook/0x.md)
+- [Use Turnkey wallets with Aave](https://docs.turnkey.com/cookbook/aave.md)
+- [Use Turnkey wallets with Breeze](https://docs.turnkey.com/cookbook/breeze.md)
+- [Use Turnkey wallets with Jupiter](https://docs.turnkey.com/cookbook/jupiter.md)
+- [Use Turnkey wallets with Li.Fi](https://docs.turnkey.com/cookbook/lifi.md)
+- [Use Turnkey wallets with Morpho](https://docs.turnkey.com/cookbook/morpho.md)
+- [Errors](https://docs.turnkey.com/developer-reference/api-overview/errors.md): An error returned by the Turnkey API might look something like this:
+- [Introduction](https://docs.turnkey.com/developer-reference/api-overview/intro.md): Turnkey's API is a remote procedure call (RPC) API.
+- [Queries](https://docs.turnkey.com/developer-reference/api-overview/queries.md): Queries are read requests to Turnkey's API. Query URL paths are prefixed with `/public/v1/query`. Queries are not subject to enforcement of the policy engine. All users within an organization can read any data within the organization.
+- [Stamps](https://docs.turnkey.com/developer-reference/api-overview/stamps.md): Every request made to Turnkey must include a signature over the POST body attached as a HTTP header. Our secure enclave applications use this signature to verify the integrity and authenticity of the request.
+- [Submissions](https://docs.turnkey.com/developer-reference/api-overview/submissions.md): Submissions are requests to securely execute a workload. Submission URL paths are prefixed with `/public/v1/submit`. Submissions requests, if valid, produce an `Activity`.
+- [Using LLMs](https://docs.turnkey.com/developer-reference/using-llms.md)
+- [Activity Webhooks](https://docs.turnkey.com/developer-reference/webhooks.md): Webhooks provide a powerful mechanism to receive real-time notifications about activity requests in your Turnkey organization. Additionally, you'll be able to receive all activity requests for both the parent organization and all its child organizations. This functionality can be enabled via the organization feature capabilities of our platform, as detailed in the section on [organization features](/concepts/organizations#features).
+- [Add an Additional Passkey](https://docs.turnkey.com/embedded-wallets/code-examples/add-credential.md): This guide demonstrates how to add a new credential (specifically, a passkey) to an existing wallet using the Turnkey SDK.
+- [Authenticate a User with Email](https://docs.turnkey.com/embedded-wallets/code-examples/authenticate-user-email.md)
+- [Authenticate a User with a Passkey Credential](https://docs.turnkey.com/embedded-wallets/code-examples/authenticate-user-passkey.md)
+- [Create a User Passkey Session](https://docs.turnkey.com/embedded-wallets/code-examples/create-passkey-session.md): A passkey session is an expiring session enabled by an initial passkey authentication. You could think of this as a "lightning mode" of sorts: creating a passkey session allows users to authenticate subsequent requests touch-free. Under the hood, this is powered by our [indexedDbStamper](/sdks/advanced/indexed-db-stamper). These sessions are enabled by creating a short-lived embedded API key in the browser, stored in localStorage, and cryptographically scoped to a public key generated by IndexedDB.
+- [Create a Sub-Org with a Passkey User](https://docs.turnkey.com/embedded-wallets/code-examples/create-sub-org-passkey.md): In this guide, we'll walk through the process of creating a new end user with a passkey.
+- [Create a User with Email Only](https://docs.turnkey.com/embedded-wallets/code-examples/create-user-email.md): This example demonstrates how to create a sub organization using just an end-user's email: passkeys not required! Note that this flow does not require emails to be verified.
+- [Export Wallet or Private Key](https://docs.turnkey.com/embedded-wallets/code-examples/export.md): This is a guide to exporting your wallet or private key from Turnkey. For more information about the security of this flow, check out [Enclave secure channels](/security/enclave-secure-channels).
+- [Import Wallet or Private Key](https://docs.turnkey.com/embedded-wallets/code-examples/import.md): This is a guide to importing your wallet or private key into Turnkey. For more information about the security of this flow, check out [Enclave secure channels](/security/enclave-secure-channels).
+- [Signing Transactions](https://docs.turnkey.com/embedded-wallets/code-examples/signing-transactions.md): This is a guide to signing transactions in the browser context. While these snippets leverage Ethers, it can be swapped out for other signers in the Viem or Solana contexts. See [here](https://github.com/tkhq/sdk/tree/main/examples/with-eth-passkeys-galore) for an example with both Ethers and Viem in the passkey + browser context, and [here](https://github.com/tkhq/sdk/tree/main/examples/with-solana-passkeys) for a similar example with Solana.
+- [Wallet Authentication](https://docs.turnkey.com/embedded-wallets/code-examples/wallet-auth.md): In this guide, we'll explore how to leverage the `WalletClient` in the Turnkey SDK to authenticate requests to Turnkey's API using either Solana or Ethereum wallets.
+- [Features](https://docs.turnkey.com/embedded-wallets/features/overview.md)
+- [Overview](https://docs.turnkey.com/embedded-wallets/overview.md)
+- [FAQ](https://docs.turnkey.com/faq.md)
+- [addOauthProvider()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-add-oauth-provider.md)
+- [addPasskey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-add-passkey.md)
+- [clearAllSessions()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-clear-all-sessions.md)
+- [clearSession()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-clear-session.md)
+- [clearUnusedKeyPairs()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-clear-unused-key-pairs.md)
+- [completeOauth()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-complete-oauth.md)
+- [completeOtp()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-complete-otp.md)
+- [connectWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-connect-wallet-account.md)
+- [constructor()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-constructor.md)
+- [createApiKeyPair()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-create-api-key-pair.md)
+- [createPasskey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-create-passkey.md)
+- [createWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-create-wallet.md)
+- [createWalletAccounts()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-create-wallet-accounts.md)
+- [deleteSubOrganization()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-delete-sub-organization.md)
+- [disconnectWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-disconnect-wallet-account.md)
+- [exportPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-export-private-key.md)
+- [exportWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-export-wallet.md)
+- [exportWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-export-wallet-account.md)
+- [fetchOrCreateP256ApiKeyUser()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-or-create-p256-api-key-user.md)
+- [fetchOrCreatePolicies()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-or-create-policies.md)
+- [fetchPrivateKeys()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-private-keys.md)
+- [fetchUser()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-user.md)
+- [fetchWalletAccounts()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-wallet-accounts.md)
+- [fetchWalletProviders()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-wallet-providers.md)
+- [fetchWallets()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-fetch-wallets.md)
+- [getActiveSessionKey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-get-active-session-key.md)
+- [getAllSessions()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-get-all-sessions.md)
+- [getProxyAuthConfig()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-get-proxy-auth-config.md)
+- [getSession()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-get-session.md)
+- [fetchWalletProviders()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-get-wallet-providers.md)
+- [importPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-import-private-key.md)
+- [importWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-import-wallet.md)
+- [init()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-init.md)
+- [initOtp()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-init-otp.md)
+- [loginOrSignupWithWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-login-or-signup-with-wallet.md)
+- [loginWithOauth()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-login-with-oauth.md)
+- [loginWithOtp()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-login-with-otp.md)
+- [loginWithPasskey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-login-with-passkey.md)
+- [loginWithWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-login-with-wallet.md)
+- [logout()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-logout.md)
+- [refreshSession()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-refresh-session.md)
+- [removeOauthProviders()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-remove-oauth-providers.md)
+- [removePasskeys()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-remove-passkeys.md)
+- [removeUserEmail()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-remove-user-email.md)
+- [removeUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-remove-user-phone-number.md)
+- [setActiveSession()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-set-active-session.md)
+- [signAndSendTransaction()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-and-send-transaction.md)
+- [signMessage()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-message.md)
+- [signTransaction()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-transaction.md)
+- [signUpWithOauth()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-up-with-oauth.md)
+- [signUpWithOtp()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-up-with-otp.md)
+- [signUpWithPasskey()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-up-with-passkey.md)
+- [signUpWithWallet()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-sign-up-with-wallet.md)
+- [storeSession()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-store-session.md)
+- [switchWalletAccountChain()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-switch-wallet-account-chain.md)
+- [switchWalletProviderChain()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-switch-wallet-provider-chain.md)
+- [updateUserEmail()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-update-user-email.md)
+- [updateUserName()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-update-user-name.md)
+- [updateUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-update-user-phone-number.md)
+- [verifyOtp()](https://docs.turnkey.com/generated-docs/formatted/core/turnkey-client-verify-otp.md)
+- [addOauthProvider()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-add-oauth-provider.md)
+- [addPasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-add-passkey.md)
+- [clearAllSessions()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-clear-all-sessions.md)
+- [clearSession()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-clear-session.md)
+- [clearUnusedKeyPairs()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-clear-unused-key-pairs.md)
+- [completeOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-complete-oauth.md)
+- [completeOtp()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-complete-otp.md)
+- [connectWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-connect-wallet-account.md)
+- [createApiKeyPair()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-create-api-key-pair.md)
+- [createPasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-create-passkey.md)
+- [createWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-create-wallet.md)
+- [createWalletAccounts()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-create-wallet-accounts.md)
+- [deleteSubOrganization()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-delete-sub-organization.md)
+- [disconnectWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-disconnect-wallet-account.md)
+- [exportPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-export-private-key.md)
+- [exportWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-export-wallet.md)
+- [exportWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-export-wallet-account.md)
+- [fetchOrCreateP256ApiKeyUser()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-or-create-p256-api-key-user.md)
+- [fetchOrCreatePolicies()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-or-create-policies.md)
+- [fetchPrivateKeys()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-private-keys.md)
+- [fetchUser()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-user.md)
+- [fetchWalletAccounts()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-wallet-accounts.md)
+- [fetchWalletProviders()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-wallet-providers.md)
+- [fetchWallets()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-fetch-wallets.md)
+- [getActiveSessionKey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-get-active-session-key.md)
+- [getAllSessions()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-get-all-sessions.md)
+- [getProxyAuthConfig()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-get-proxy-auth-config.md)
+- [getSession()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-get-session.md)
+- [fetchWalletProviders()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-get-wallet-providers.md)
+- [handleAddEmail()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-add-email.md)
+- [handleAddOauthProvider()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-add-oauth-provider.md)
+- [handleAddPasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-add-passkey.md)
+- [handleAddPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-add-phone-number.md)
+- [handleAppleOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-apple-oauth.md)
+- [handleConnectExternalWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-connect-external-wallet.md)
+- [handleDiscordOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-discord-oauth.md)
+- [handleExportPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-export-private-key.md)
+- [handleExportWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-export-wallet.md)
+- [handleExportWalletAccount()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-export-wallet-account.md)
+- [handleFacebookOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-facebook-oauth.md)
+- [handleGoogleOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-google-oauth.md)
+- [handleImportPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-import-private-key.md)
+- [handleImportWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-import-wallet.md)
+- [handleLogin()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-login.md)
+- [handleRemoveOauthProvider()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-remove-oauth-provider.md)
+- [handleRemovePasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-remove-passkey.md)
+- [handleRemoveUserEmail()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-remove-user-email.md)
+- [handleRemoveUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-remove-user-phone-number.md)
+- [handleSignMessage()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-sign-message.md)
+- [handleUpdateUserEmail()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-update-user-email.md)
+- [handleUpdateUserName()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-update-user-name.md)
+- [handleUpdateUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-update-user-phone-number.md)
+- [handleXOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-handle-xoauth.md)
+- [importPrivateKey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-import-private-key.md)
+- [importWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-import-wallet.md)
+- [initOtp()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-init-otp.md)
+- [loginOrSignupWithWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-login-or-signup-with-wallet.md)
+- [loginWithOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-login-with-oauth.md)
+- [loginWithOtp()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-login-with-otp.md)
+- [loginWithPasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-login-with-passkey.md)
+- [loginWithWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-login-with-wallet.md)
+- [logout()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-logout.md)
+- [refreshSession()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-refresh-session.md)
+- [refreshUser()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-refresh-user.md)
+- [refreshWallets()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-refresh-wallets.md)
+- [removeOauthProviders()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-remove-oauth-providers.md)
+- [removePasskeys()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-remove-passkeys.md)
+- [removeUserEmail()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-remove-user-email.md)
+- [removeUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-remove-user-phone-number.md)
+- [setActiveSession()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-set-active-session.md)
+- [signAndSendTransaction()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-and-send-transaction.md)
+- [signMessage()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-message.md)
+- [signTransaction()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-transaction.md)
+- [signUpWithOauth()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-up-with-oauth.md)
+- [signUpWithOtp()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-up-with-otp.md)
+- [signUpWithPasskey()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-up-with-passkey.md)
+- [signUpWithWallet()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-sign-up-with-wallet.md)
+- [storeSession()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-store-session.md)
+- [switchWalletAccountChain()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-switch-wallet-account-chain.md)
+- [switchWalletProviderChain()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-switch-wallet-provider-chain.md)
+- [updateUserEmail()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-update-user-email.md)
+- [updateUserName()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-update-user-name.md)
+- [updateUserPhoneNumber()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-update-user-phone-number.md)
+- [verifyOtp()](https://docs.turnkey.com/generated-docs/formatted/react-wallet-kit/client-context-type-verify-otp.md)
+- [Embedded wallets quickstart](https://docs.turnkey.com/getting-started/embedded-wallet-quickstart.md): Turnkey's embedded wallets enable you to integrate secure, custom wallet experiences directly into your product. With features like advanced security, seamless authentication, and flexible UX options, you can focus on building great products while we handle the complexities of private key management.
+- [Examples](https://docs.turnkey.com/getting-started/examples.md): Turnkey infrastructure is flexible by default. We intentionally prioritize low-level primitives in our product to avoid creating blockers for developers building new kinds of applications on Turnkey.
+- [Migrating Wallets to Turnkey](https://docs.turnkey.com/getting-started/migration-guide.md): If you're coming to Turnkey from a different provider, we can help make it simple. Follow the custodial or non-custodial flows outlined below depending on your use case, and be sure to check the linked resources for some fully featured utilities. 
+- [Account setup](https://docs.turnkey.com/getting-started/quickstart.md): Before diving into the code, let's set up your organization and conjure up an API keypair to unlock the full potential of Turnkey!
+- [Transaction automation quickstart](https://docs.turnkey.com/getting-started/signing-automation-quickstart.md): Turnkey's transaction automation enables you to build secure, programmatic signing workflows directly into your applications. With features like customizable policies, multi-party approvals, and support for any blockchain, you can confidently automate complex signing operations while maintaining enterprise-grade security.
+- [Overview](https://docs.turnkey.com/home.md): Welcome to Turnkey!
+- [Aptos support on Turnkey](https://docs.turnkey.com/networks/aptos.md)
+- [Bitcoin support on Turnkey](https://docs.turnkey.com/networks/bitcoin.md)
+- [Cosmos support on Turnkey](https://docs.turnkey.com/networks/cosmos.md)
+- [Doge](https://docs.turnkey.com/networks/doge.md)
+- [Ethereum (EVM) support on Turnkey](https://docs.turnkey.com/networks/ethereum.md)
+- [IOTA support on Turnkey](https://docs.turnkey.com/networks/iota.md)
+- [Movement](https://docs.turnkey.com/networks/movement.md): Movement support on Turnkey
+- [Others](https://docs.turnkey.com/networks/others.md)
+- [Overview](https://docs.turnkey.com/networks/overview.md): Turnkey operates at the **cryptographic curve** level rather than specific assets. As a result Turnkey is asset agnostic and can be used with any type of asset as long as we support the underlying curve.
+- [Sei support on Turnkey](https://docs.turnkey.com/networks/sei.md)
+- [Solana (SVM) support on Turnkey](https://docs.turnkey.com/networks/solana.md)
+- [Stacks](https://docs.turnkey.com/networks/stacks.md)
+- [Sui support on Turnkey](https://docs.turnkey.com/networks/sui.md)
+- [Tron support on Turnkey](https://docs.turnkey.com/networks/tron.md)
+- [Embedded wallets implementation guide](https://docs.turnkey.com/production-checklist/embedded-wallet.md): Designing your embedded wallet implementation
+- [Production Checklist](https://docs.turnkey.com/production-checklist/production-checklist.md): This checklist contains recommendations and steps specifically for deploying an Embedded Wallet production environment.
+- [Transaction Automation Implementation Guide](https://docs.turnkey.com/production-checklist/transaction-automation.md): Implementing transaction automation with Turnkey
+- [Fiat Onramp](https://docs.turnkey.com/products/embedded-wallets/features/fiat-on-ramp.md): Turnkey’s Fiat Onramp lets your end users convert traditional currency (USD, EUR, etc.) into crypto assets (ETH, USDC, BTC, etc.) directly within your application.
+- [Multichain support](https://docs.turnkey.com/products/embedded-wallets/features/multi-chain-support.md): Overview of our multichain network support.
+- [null](https://docs.turnkey.com/products/transaction-automation/features/export-wallets.md)
+- [null](https://docs.turnkey.com/products/transaction-automation/features/import-wallets.md)
+- [Multichain support](https://docs.turnkey.com/products/transaction-automation/features/multi-chain-support.md): Overview of our multichain network support.
+- [QuorumOS](https://docs.turnkey.com/products/transaction-automation/features/security/quorum-os.md)
+- [Remote Attestation](https://docs.turnkey.com/products/transaction-automation/features/security/remote-attestation.md)
+- [Secure Hardware](https://docs.turnkey.com/products/transaction-automation/features/security/secure-hardware.md)
+- [Account Abstraction Wallets](https://docs.turnkey.com/reference/aa-wallets.md): Turnkey offers flexible infrastructure to create and manage keys. These keys can be used as a signer inside of an [Account Abstraction wallet](https://www.erc4337.io/), and we've partnered with [Alchemy](https://www.alchemy.com/) and [ZeroDev](https://zerodev.app/) to integrate in a few lines of code.
+- [Auth Proxy](https://docs.turnkey.com/reference/auth-proxy.md): Use Turnkey’s managed Auth Proxy to securely run OTP/OAuth/signup flows without standing up your own backend.
+- [Embedded Wallet Kit (EWK)](https://docs.turnkey.com/reference/embedded-wallet-kit.md): Turnkey's Embedded Wallets enable you to integrate secure, custom wallet experiences directly into your product. With features like advanced security, seamless authentication, and flexible UX options, you can focus on building great products while we handle the complexities of private key management.
+- [How to Integrate Gasless Transactions On Solana With Turnkey](https://docs.turnkey.com/reference/solana-gasless-transactions.md)
+- [How To Integrate Gasless Transactions On Tron With Turnkey](https://docs.turnkey.com/reference/tron-gasless-transactions.md)
+- [ApiKeyStamper](https://docs.turnkey.com/sdks/advanced/api-key-stamper.md)
+- [IframeStamper](https://docs.turnkey.com/sdks/advanced/iframe-stamper.md)
+- [TurnkeyClient](https://docs.turnkey.com/sdks/advanced/turnkey-client.md)
+- [WalletStamper](https://docs.turnkey.com/sdks/advanced/wallet-stamper.md)
+- [WebauthnStamper](https://docs.turnkey.com/sdks/advanced/webauthn-stamper.md)
+- [Using the CLI](https://docs.turnkey.com/sdks/cli.md): This quickstart will guide you through Turnkey’s onboarding, adding an API key, creating a wallet, and signing your first Ethereum transaction.
+- [Flutter](https://docs.turnkey.com/sdks/flutter.md): This documentation contains guides for using the Flutter SDK.
+- [Golang](https://docs.turnkey.com/sdks/golang.md): Turnkey offers native tooling for interacting with the API using Golang. See [https://github.com/tkhq/go-sdk](https://github.com/tkhq/go-sdk) for more details.
+- [SDK Reference](https://docs.turnkey.com/sdks/introduction.md): Turnkey provides a variety of client and server SDKs which simplify interacting with Turnkey's API. The SDKs offer methods, utilities, and helper functions to quickly implement features and perform common workflows.
+- [TypeScript Server](https://docs.turnkey.com/sdks/javascript-server.md): The [`@turnkey/sdk-server`](https://www.npmjs.com/package/@turnkey/sdk-server) package exposes functionality that lets developers build server-side functionality for applications that interact with the Turnkey API.
+- [Migration Path](https://docs.turnkey.com/sdks/migration-path.md): This guide aims to cover the process for migrating from lower-level Turnkey SDK (i.e. `@turnkey/{ http, api-key-stamper, webauthn-stamper, iframe-stamper }`) libraries, to our more recent abstractions: `@turnkey/{ sdk-browser, sdk-server, sdk-react }`
+- [Python](https://docs.turnkey.com/sdks/python.md): Turnkey offers support for interacting with the API using Python. See [https://github.com/tkhq/python-sdk](https://github.com/tkhq/python-sdk) for more details.
+- [React Native](https://docs.turnkey.com/sdks/react-native.md): This documentation contains guides for using Turnkey's React Native compatible [JavaScript packages](https://github.com/tkhq/sdk/tree/main/packages).
+- [Advanced API requests](https://docs.turnkey.com/sdks/react-native/advanced-api-requests.md): Learn how to make advanced API requests to Turnkey's infrastructure.
+- [Email and SMS OTP authentication](https://docs.turnkey.com/sdks/react-native/authentication/email-sms.md): Set up and implement email OTP authentication using @turnkey/react-native-wallet-kit with Expo Router.
+- [Overview](https://docs.turnkey.com/sdks/react-native/authentication/overview.md): Learn how to set up, log in, or sign up easily in your React app using @turnkey/react-native-wallet-kit.
+- [Passkey authentication](https://docs.turnkey.com/sdks/react-native/authentication/passkey.md): Set up and implement passkey authentication using @turnkey/react-native-wallet-kit with Expo.
+- [Social logins](https://docs.turnkey.com/sdks/react-native/authentication/social-logins.md): Configure and implement social logins in your React Native app using `@turnkey/react-native-wallet-kit`.
+- [Getting started with Turnkey's Embedded Wallet Kit](https://docs.turnkey.com/sdks/react-native/getting-started.md): Learn how to set up the Embedded Wallet Kit (EWK) in your React Native application. This page will guide you through the initial setup, including enabling Turnkey's Auth Proxy, installing the React Native SDK, and configuring your app.
+- [Overview](https://docs.turnkey.com/sdks/react-native/overview.md): Turnkey's Embedded Wallet Kit [`(@turnkey/react-native-wallet-kit)`](https://www.npmjs.com/package/@turnkey/react-native-wallet-kit) is the easiest way to integrate Turnkey's Embedded Wallets into your React Native applications, no backend required. Built on [`@turnkey/core`](https://www.npmjs.com/package/@turnkey/core), it provides easy-to-use functions exported from a hook, allowing you to quickly build secure embedded wallet experiences.
+- [Signing](https://docs.turnkey.com/sdks/react-native/signing.md): Learn how to sign messages and transactions in your React Native app using Turnkey's Embedded Wallets.
+- [Sub-organization customization](https://docs.turnkey.com/sdks/react-native/sub-organization-customization.md)
+- [Using embedded wallets](https://docs.turnkey.com/sdks/react-native/using-embedded-wallets.md): Learn how to create and manage embedded wallets in your React Native application using Turnkey's Embedded Wallet Kit.
+- [Advanced API requests](https://docs.turnkey.com/sdks/react/advanced-api-requests.md): Learn how to make advanced API requests to Turnkey's infrastructure.
+- [Advanced backend authentication](https://docs.turnkey.com/sdks/react/advanced-backend-authentication.md): Learn how to set up authentication using your backend and the Embedded Wallet Kit.
+- [Authentication](https://docs.turnkey.com/sdks/react/auth.md): Learn how to set up, log in, or sign up easily in your React app using @turnkey/react-wallet-kit.
+- [Getting started with Turnkey's Embedded Wallet Kit](https://docs.turnkey.com/sdks/react/getting-started.md): Learn how to set up the Embedded Wallet Kit (EWK) in your React application. This page will guide you through the initial setup, including enabling Turnkey's Auth Proxy, installing the SDK, and configuring your app.
+- [Overview](https://docs.turnkey.com/sdks/react/index.md): Turnkey's Embedded Wallet Kit [`(@turnkey/react-wallet-kit)`](https://www.npmjs.com/package/@turnkey/react-wallet-kit) is the easiest way to integrate Turnkey's Embedded Wallets into your React applications, no backend required. Built on [`@turnkey/core`](https://www.npmjs.com/package/@turnkey/core), it provides a set of UI components and easy-to-use functions, all exported from a hook, allowing you to quickly build secure embedded wallet experiences.
+- [React](https://docs.turnkey.com/sdks/react/landing.md): Turnkey's React SDK offerings provide a powerful way to integrate Turnkey's Embedded Wallets into your React applications. With features like secure authentication, wallet management, and transaction signing, you can build seamless wallet experiences directly in your React apps.
+- [@turnkey/sdk-react (legacy)](https://docs.turnkey.com/sdks/react/legacy.md)
+- [Migrating to @turnkey/react-wallet-kit from @turnkey/sdk-react](https://docs.turnkey.com/sdks/react/migrating-sdk-react.md): A guide to help you migrate your React applications from the legacy `@turnkey/sdk-react` to the new `@turnkey/react-wallet-kit` SDK.
+- [Signing](https://docs.turnkey.com/sdks/react/signing.md): Learn how to sign transactions and messages in your React app using Turnkey's Embedded Wallets or an external browser wallet.
+- [Sub-organization customization](https://docs.turnkey.com/sdks/react/sub-organization-customization.md): Learn how to customize the sub-organization creation process in your React app.
+- [Troubleshooting](https://docs.turnkey.com/sdks/react/troubleshooting.md): Common issues and solutions when using the Embedded Wallet Kit.
+- [UI customization](https://docs.turnkey.com/sdks/react/ui-customization.md): Learn how to customize the look and feel of the modals in your React app using the provided UI components.
+- [Using embedded wallets](https://docs.turnkey.com/sdks/react/using-embedded-wallets.md): Learn how to create and manage embedded wallets in your React application using Turnkey's Embedded Wallet Kit.
+- [External wallet authentication](https://docs.turnkey.com/sdks/react/using-external-wallets/authentication.md): Allow users to authenticate with external wallets like MetaMask, Phantom, or WalletConnect in your React app.
+- [Connecting external wallets](https://docs.turnkey.com/sdks/react/using-external-wallets/connecting.md): Allow users to connect external wallets like MetaMask, Phantom, or WalletConnect alongside Turnkey’s embedded wallets in your React app.
+- [Using external wallets](https://docs.turnkey.com/sdks/react/using-external-wallets/overview.md): Learn how you can use external wallets alongside your embedded wallets in your React app using Turnkey's abstractions.
+- [Ruby](https://docs.turnkey.com/sdks/ruby.md): Turnkey offers native tooling for interacting with the API using Ruby. See [https://github.com/tkhq/ruby-sdk](https://github.com/tkhq/ruby-sdk) for more details.
+- [Rust](https://docs.turnkey.com/sdks/rust.md): Turnkey offers native tooling for interacting with the API using Rust. See [https://github.com/tkhq/rust-sdk](https://github.com/tkhq/rust-sdk) for more details.
+- [Turnkey Swift SDK](https://docs.turnkey.com/sdks/swift.md): This documentation contains guides for using the [Turnkey Swift SDK](https://github.com/tkhq/swift-sdk).
+- [Proxy Middleware](https://docs.turnkey.com/sdks/swift/proxy-middleware.md): The [`ProxyMiddleware`](https://github.com/tkhq/swift-sdk/blob/bd8993b4b6b35c44d4a917b06dd44490961c4f28/Sources/Middleware/ProxyMiddleware.swift) is integrated into the `TurnkeyClient` through its initializer that accepts a proxy server URL.
+- [Introduction](https://docs.turnkey.com/sdks/swift/register-passkey.md): This guide explains how to use the `PasskeyManager` class to register a new passkey within your iOS application. We'll cover the necessary configurations and provide code examples with detailed explanations.
+- [Advanced API requests](https://docs.turnkey.com/sdks/typescript-frontend/advanced-api-requests.md): Learn how to make advanced API requests to Turnkey's infrastructure.
+- [Advanced backend authentication](https://docs.turnkey.com/sdks/typescript-frontend/advanced-backend-authentication.md): Learn how to setup authentication using your backend and `@turnkey/core`.
+- [Authentication](https://docs.turnkey.com/sdks/typescript-frontend/auth.md): Learn how to set up authentication that leverages Turnkey's Auth Proxy using @turnkey/core in your frontend JavaScript application.
+- [Getting Started with @turnkey/core](https://docs.turnkey.com/sdks/typescript-frontend/getting-started.md): Learn how to set up `@turnkey/core` in your frontend JavaScript application. This page will guide you through creating a Turnkey organization, configuring authentication, installing the SDK, and initializing the client.
+- [Overview](https://docs.turnkey.com/sdks/typescript-frontend/index.md): `@turnkey/core` is the core TypeScript client-side SDK for Turnkey's Embedded Wallets. It provides a set of functions and utilities to interact with Turnkey's APIs, a powerful session management system, built-in stampers, and a raw HTTP client for advanced use cases. This SDK is designed to be used as a foundation for building Turnkey's Embedded Wallets in various frontend frameworks, including React, React-native (alpha), Angular, Vue, and Svelte. If you're using React, please consider using the [`@turnkey/react-wallet-kit`](/sdks/react/) for a more tailored experience.
+- [TypeScript | Frontend](https://docs.turnkey.com/sdks/typescript-frontend/landing.md): Turnkey provides a TypeScript SDK for building secure embedded wallet experiences in frontend applications. This SDK is designed to be used as a foundation for building Turnkey's Embedded Wallets in various frontend frameworks, including React, Angular, Vue, and Svelte.
+- [@turnkey/sdk-browser (legacy)](https://docs.turnkey.com/sdks/typescript-frontend/legacy.md)
+- [CosmJS](https://docs.turnkey.com/sdks/web3/cosmjs.md): [`@turnkey/cosmjs`](https://www.npmjs.com/package/@turnkey/cosmjs) exports a `TurnkeyDirectWallet` that serves as a drop-in replacement for a CosmJS direct wallet. It includes support for `signDirect`. See full implementation [here](https://github.com/tkhq/sdk/tree/main/packages/cosmjs) for more details and examples.
+- [EIP 1193](https://docs.turnkey.com/sdks/web3/eip-1193.md): [`@turnkey/eip-1193-provider`](https://www.npmjs.com/package/@turnkey/eip-1193-provider) is a Turnkey-compatible Ethereum provider that conforms to the [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) standard. It's built to seamlessly integrate with a broad spectrum of EVM-compatible chains, offering capabilities like account management, transaction signing, and blockchain interaction.
+- [Ethers](https://docs.turnkey.com/sdks/web3/ethers.md): [`@turnkey/ethers`](https://www.npmjs.com/package/@turnkey/ethers) exports a `TurnkeySigner` that serves as a drop-in replacement for an Ethers signer.
+- [Solana](https://docs.turnkey.com/sdks/web3/solana.md): We have released a package that you can use to sign transactions and messages: [`@turnkey/solana`](https://www.npmjs.com/package/@turnkey/solana). See [here](https://github.com/tkhq/sdk/tree/main/examples/with-solana) for an example.
+- [Viem](https://docs.turnkey.com/sdks/web3/viem.md): [`@turnkey/viem`](https://www.npmjs.com/package/@turnkey/viem) provides a Turnkey [Custom Account](https://viem.sh/docs/accounts/custom.html#custom-account) (signer) which implements the signing APIs expected by Viem clients.
+- [Disaster Recovery](https://docs.turnkey.com/security/disaster-recovery.md)
+- [Enclave to end-user secure channels](https://docs.turnkey.com/security/enclave-secure-channels.md)
+- [Non-Custodial Key Management](https://docs.turnkey.com/security/non-custodial-key-mgmt.md)
+- [Our Approach](https://docs.turnkey.com/security/our-approach.md)
+- [Quorum Deployments](https://docs.turnkey.com/security/quorum-deployments.md)
+- [Reporting a Vulnerability](https://docs.turnkey.com/security/reporting-a-vulnerability.md)
+- [Secure Enclaves](https://docs.turnkey.com/security/secure-enclaves.md)
+- [Turnkey Shared Responsibility Model](https://docs.turnkey.com/security/shared-responsibility-model.md)
+- [Turnkey Verified](https://docs.turnkey.com/security/turnkey-verified.md)
+- [Verifiable Data](https://docs.turnkey.com/security/verifiable-data.md)
+- [The Turnkey Whitepaper](https://docs.turnkey.com/security/whitepaper.md)
+- [Co-signing Transactions](https://docs.turnkey.com/signing-automation/co-signing-transactions.md): Learn how to set up and use co-signing (multi-sig) wallets with Turnkey.
+- [Signing Transactions](https://docs.turnkey.com/signing-automation/code-examples/signing-transactions.md): This is a guide to signing transactions in a server context. While these snippets leverage Ethers, it can be swapped out for other signers in the Viem or Solana contexts. An example for Ethers can be found , and  for Viem in the server context. A similar example with Solana can be found .
+- [Overview](https://docs.turnkey.com/signing-automation/overview.md)
+- [Claim links](https://docs.turnkey.com/wallets/claim-links.md): Enable your users to send crypto to people who haven’t signed up yet through secure, non-custodial magic claim links. This feature creates pre-funded wallets that new users can claim by simply clicking a URL.
+- [Export wallets and keys](https://docs.turnkey.com/wallets/export-wallets.md): Turnkey's export functionality allows your end users to backup or transfer a [Wallet](/concepts/wallets) by securely viewing the wallet's [mnemonic phrase](https://learnmeabitcoin.com/technical/mnemonic), a [Wallet Account](/concepts/wallets#accounts) or a raw [Private Key](/concepts/wallets#private-keys). We engineered this feature to ensure that the user can export their mnemonic or private key without exposing it to Turnkey or your application.
+- [Fiat Onramp](https://docs.turnkey.com/wallets/fiat-on-ramp.md): Turnkey’s Fiat Onramp lets your end users convert traditional currency (USD, EUR, etc.) into crypto assets (ETH, USDC, BTC, etc.) directly within your application.
+- [Import wallets and keys](https://docs.turnkey.com/wallets/import-wallets.md): Turnkey's import functionality allows your end users to securely transfer a [Wallet](/concepts/wallets) or a [Private Key](/concepts/wallets#private-keys) onto the Turnkey platform via CLI or an embedded iframe. We engineered this feature to ensure that the user can import their mnemonic or private key into a Turnkey secure enclave without exposing it to Turnkey or your application.
+- [Pre-generated wallets](https://docs.turnkey.com/wallets/pregenerated-wallets.md): Turnkey allows you to pre-generate wallets for your user before they authenticate. This is helpful if you already know the users email or phone number, and want to create a deposit address for them or airdrop a reward before they authenticate to Turnkey.
+- [Integrating an embedded wallet with Wagmi](https://docs.turnkey.com/wallets/wagmi.md)
+
+
+## Optional
+
+- [Support](https://join.slack.com/t/clubturnkey/shared_invite/zt-3aemp2g38-zIh4V~3vNpbX5PsSmkKxcQ)
+- [Blog](https://www.turnkey.com/blog)
+- [Contact us](https://www.turnkey.com/contact-us)
