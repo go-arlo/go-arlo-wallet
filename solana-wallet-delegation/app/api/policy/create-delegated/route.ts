@@ -17,23 +17,45 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!organizationId || !delegatedUserId || !allowedAddresses || allowedAddresses.length === 0) {
+    if (!organizationId || !delegatedUserId) {
       return NextResponse.json(
-        { error: 'Organization ID, delegated user ID, and at least one allowed address are required' },
+        { error: 'Organization ID and delegated user ID are required' },
         { status: 400 }
       );
     }
 
+    // Set default dummy address if none provided (needed for backwards compatibility)
+    const addresses = allowedAddresses && allowedAddresses.length > 0
+      ? allowedAddresses
+      : ['11111111111111111111111111111111']; // System program as dummy
+
     const policyService = new PolicyService();
     const walletService = new WalletService();
 
-    // Create the delegated access policy with restrictions
-    const policy = await policyService.createDelegatedAccessPolicy(
-      organizationId,
-      delegatedUserId,
-      allowedAddresses, // Pass array of addresses
-      maxTransactionAmount
-    );
+    // Create the Jupiter swap policy if no specific programs are provided
+    // Otherwise create the standard delegated access policy
+    let transferPolicy;
+    if (!allowedPrograms || allowedPrograms.length === 0) {
+      // Use Jupiter swap policy for better compatibility with DEX swaps
+      transferPolicy = await policyService.createJupiterSwapPolicy(
+        organizationId,
+        delegatedUserId,
+        maxTransactionAmount
+      );
+    } else {
+      // Use standard delegated access policy with custom programs
+      transferPolicy = await policyService.createDelegatedAccessPolicy(
+        organizationId,
+        delegatedUserId,
+        addresses, // Pass array of addresses (with default if needed)
+        maxTransactionAmount,
+        allowedPrograms,
+        instructionLimit
+      );
+    }
+
+    // No need for separate program policy since it's now integrated
+    let programPolicy = null;
 
     let rootQuorumUpdated = false;
 
@@ -51,14 +73,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       policy: {
-        id: policy.id,
-        name: policy.name,
-        effect: policy.effect,
-        condition: policy.condition,
-        consensus: policy.consensus,
-        organizationId: policy.organizationId,
-        createdAt: policy.createdAt.toISOString()
+        id: transferPolicy.id,
+        name: transferPolicy.name,
+        effect: transferPolicy.effect,
+        condition: transferPolicy.condition,
+        consensus: transferPolicy.consensus,
+        organizationId: transferPolicy.organizationId,
+        createdAt: transferPolicy.createdAt.toISOString()
       },
+      programPolicy: programPolicy ? {
+        id: programPolicy.id,
+        name: programPolicy.name,
+        effect: programPolicy.effect,
+        condition: programPolicy.condition,
+        consensus: programPolicy.consensus,
+        organizationId: programPolicy.organizationId,
+        createdAt: programPolicy.createdAt.toISOString()
+      } : null,
       rootQuorumUpdated,
       createdAt: new Date().toISOString()
     });

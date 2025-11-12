@@ -82,6 +82,22 @@ export class WalletService {
       const delegatedUserId = subOrgResponse.rootUserIds?.[0] || '';
       const endUserId = subOrgResponse.rootUserIds?.[1] || '';
 
+      // Create an initial admin policy for the sub-organization
+      // This allows the root organization to manage this sub-org
+      try {
+        await this.apiClient.createPolicy({
+          organizationId: subOrgId,
+          policyName: 'Root Organization Admin Access',
+          effect: 'EFFECT_ALLOW',
+          consensus: 'true', // Allow any authenticated user from root org
+          condition: 'true', // Allow all operations
+          notes: 'Initial admin policy allowing root organization to manage this sub-organization',
+        });
+      } catch (policyError) {
+        console.warn('Could not create initial admin policy:', policyError);
+        // Continue - the sub-org was created successfully
+      }
+
       // Get wallet accounts
       const walletAccountsResponse = await this.apiClient.getWalletAccounts({
         organizationId: subOrgId,
