@@ -25,33 +25,13 @@ export default function DelegatedPolicyDemo() {
     organizationId: '',
     delegatedUserId: '',
     endUserId: '',
-    allowedAddresses: [], // Empty by default - not needed for swaps
+    allowedAddresses: ['11111111111111111111111111111112'], // Array of allowed addresses
     maxTransactionAmount: 1000000, // 0.001 SOL in lamports
     allowedPrograms: [
-      // Core system programs
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',  // SPL Token Program
-      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb', // SPL Token-2022 Program
-      '11111111111111111111111111111111',               // System Program
-      'ComputeBudget111111111111111111111111111111',    // Compute Budget Program
-      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',  // Associated Token Account
-
-      // Jupiter programs
-      'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4',   // Jupiter Aggregator V6
-      'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB',   // Jupiter V4
-      'JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph',   // Jupiter V3
-      'JUP2jxvXaqu7NQY1GmNF4m1vodw12LVXYxbFL2uJvfo',   // Jupiter V2
-
-      // Major DEXs
-      '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',   // Raydium AMM
-      'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc',   // Whirlpool
-      '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',   // Orca V1
-      '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP',   // Orca V2
-      'HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt',   // Lifinity
-      'SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ',   // Saber
-      'MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky',    // Mercurial
-      'Dooar9JkhdZ7J3LHN3A7YCuoGRUggXhQaG4kijfLGU2j'    // Stepn DEX
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', // Token Program
+      '11111111111111111111111111111111'  // System Program
     ],
-    instructionLimit: 30,
+    instructionLimit: 5,
     updateRootQuorum: true,
   });
 
@@ -205,32 +185,27 @@ export default function DelegatedPolicyDemo() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allowed Addresses (Optional - Not used for Jupiter swaps)
+                    Allowed Addresses *
                   </label>
                   <div className="space-y-2">
-                    {formData.allowedAddresses.length === 0 ? (
-                      <div className="text-sm text-gray-500 italic">
-                        No addresses configured. For Jupiter swaps, addresses are not restricted.
+                    {formData.allowedAddresses.map((address, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={address}
+                          onChange={(e) => updateAddress(index, e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                          placeholder="Address the delegated user can send to"
+                        />
+                        <button
+                          onClick={() => removeAddress(index)}
+                          className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                          disabled={formData.allowedAddresses.length <= 1}
+                        >
+                          Remove
+                        </button>
                       </div>
-                    ) : (
-                      formData.allowedAddresses.map((address, index) => (
-                        <div key={index} className="flex gap-2">
-                          <input
-                            type="text"
-                            value={address}
-                            onChange={(e) => updateAddress(index, e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                            placeholder="Address for simple SPL transfers (not swaps)"
-                          />
-                          <button
-                            onClick={() => removeAddress(index)}
-                            className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ))
-                    )}
+                    ))}
                     <button
                       onClick={addAddress}
                       className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
@@ -239,7 +214,7 @@ export default function DelegatedPolicyDemo() {
                     </button>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Only needed for simple SPL transfers. Jupiter swaps don't use this restriction.
+                    Default: System Program (11111...1112). Add multiple addresses to create a whitelist.
                   </p>
                 </div>
 
@@ -269,71 +244,34 @@ export default function DelegatedPolicyDemo() {
                   value={formData.instructionLimit}
                   onChange={(e) => setFormData(prev => ({ ...prev, instructionLimit: parseInt(e.target.value) }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  max="50"
+                  max="10"
                   min="1"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Jupiter swaps typically use 10-20 instructions. Set to 30 for complex multi-hop routes.
-                </p>
               </div>
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Allowed Programs (Reference Only - Not Enforced)
+                  Allowed Programs
                 </label>
-                <div className="bg-yellow-50 p-3 rounded-md mb-2 border border-yellow-200">
-                  <p className="text-xs text-yellow-800">
-                    ⚠️ Note: Turnkey currently doesn't support program validation for Solana. These programs are listed for reference but won't be enforced. Security relies on instruction count limits instead.
-                  </p>
-                </div>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {formData.allowedPrograms.map((program, index) => {
-                    // Map program IDs to friendly names
-                    const programNames: { [key: string]: string } = {
-                      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA': 'SPL Token Program',
-                      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb': 'SPL Token-2022',
-                      '11111111111111111111111111111111': 'System Program',
-                      'ComputeBudget111111111111111111111111111111': 'Compute Budget',
-                      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL': 'Associated Token Account',
-                      'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4': 'Jupiter V6',
-                      'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB': 'Jupiter V4',
-                      'JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph': 'Jupiter V3',
-                      'JUP2jxvXaqu7NQY1GmNF4m1vodw12LVXYxbFL2uJvfo': 'Jupiter V2',
-                      '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8': 'Raydium AMM',
-                      'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc': 'Whirlpool',
-                      '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1': 'Orca V1',
-                      '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP': 'Orca V2',
-                      'HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt': 'Lifinity',
-                      'SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ': 'Saber',
-                      'MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky': 'Mercurial',
-                      'Dooar9JkhdZ7J3LHN3A7YCuoGRUggXhQaG4kijfLGU2j': 'Stepn DEX'
-                    };
-                    const programName = programNames[program] || '';
-
-                    return (
-                      <div key={index} className="flex gap-2 items-center">
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={program}
-                            onChange={(e) => updateProgram(index, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs"
-                            placeholder="Program ID"
-                          />
-                          {programName && (
-                            <span className="text-xs text-gray-500 ml-2">{programName}</span>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => removeProgram(index)}
-                          className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                          disabled={formData.allowedPrograms.length <= 1}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    );
-                  })}
+                <div className="space-y-2">
+                  {formData.allowedPrograms.map((program, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={program}
+                        onChange={(e) => updateProgram(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                        placeholder="Program ID (e.g., TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA)"
+                      />
+                      <button
+                        onClick={() => removeProgram(index)}
+                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                        disabled={formData.allowedPrograms.length <= 1}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
                   <button
                     onClick={addProgram}
                     className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
@@ -368,24 +306,21 @@ export default function DelegatedPolicyDemo() {
             <div className="text-sm text-blue-700 space-y-1">
               <p><strong>Effect:</strong> ALLOW</p>
               <p><strong>Who can use:</strong> Only the delegated user</p>
-              <p><strong>Policy Type:</strong> {formData.allowedPrograms.length === 0 ? 'Jupiter Swap Policy (auto-configured)' : 'Custom Program Policy'}</p>
               <p><strong>Restrictions:</strong></p>
               <ul className="list-disc list-inside ml-4 space-y-1">
-                {formData.allowedAddresses.length > 0 && (
-                  <li>SPL transfers restricted to {formData.allowedAddresses.length} whitelisted address{formData.allowedAddresses.length > 1 ? 'es' : ''}</li>
-                )}
+                <li>Can only send SPL transfers to {formData.allowedAddresses.length} whitelisted address{formData.allowedAddresses.length > 1 ? 'es' : ''}</li>
                 {formData.maxTransactionAmount && (
                   <li>Maximum amount per transaction: {formData.maxTransactionAmount.toLocaleString()} lamports</li>
                 )}
                 <li>Maximum {formData.instructionLimit} instructions per transaction</li>
-                <li>Can interact with {formData.allowedPrograms.length > 0 ? `${formData.allowedPrograms.length} specified` : 'all Jupiter swap'} programs</li>
+                <li>Can only interact with {formData.allowedPrograms.length} allowed programs</li>
               </ul>
             </div>
           </div>
 
           <button
             onClick={handleCreatePolicy}
-            disabled={isCreating || !formData.organizationId || !formData.delegatedUserId}
+            disabled={isCreating || !formData.organizationId || !formData.delegatedUserId || formData.allowedAddresses.length === 0 || formData.allowedAddresses.some(addr => !addr)}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-4 rounded-lg font-medium transition-colors"
           >
             {isCreating ? 'Creating Policy...' : 'Create Delegated Access Policy'}
@@ -468,17 +403,6 @@ export default function DelegatedPolicyDemo() {
               {result.rootQuorumUpdated && <p>✅ Root quorum restricted to end user only</p>}
               <p>🔍 Test the policy by attempting transactions with the delegated user credentials</p>
               <p>📊 Monitor transaction attempts in the Turnkey dashboard</p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-blue-200">
-              <Link
-                href={`/demo/jupiter-swap?organizationId=${formData.organizationId}&delegatedUserId=${formData.delegatedUserId}`}
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Test Policy with Jupiter Swap Demo →
-              </Link>
-              <p className="text-xs text-blue-600 mt-1">
-                Execute a token swap to see policy enforcement in action
-              </p>
             </div>
           </div>
 

@@ -126,7 +126,11 @@ EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
 #### Transaction Limits
 - **Max Transaction Amount**: `100000000` (0.1 SOL in lamports)
 - **Max Instructions**: `5` (default)
-- **Whitelist addresses**
+
+#### Allowed Programs
+These are pre-populated:
+- **TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA** (SPL Token Program)
+- **11111111111111111111111111111111** (System Program)
 
 ### Step 4: Create the Setup
 
@@ -146,35 +150,6 @@ After creation, you'll see confirmation of:
 - **User Configuration**: Both end user and delegated user IDs
 - **Policy Details**: The restrictive policy with conditions
 - **Root Quorum Status**: Updated to exclude delegated user
-
-### Step 6: Test Policy with Jupiter Swap (Optional)
-
-After creating the policy, you can test it with a real token swap:
-
-1. **Navigate to Jupiter Swap Demo**:
-   - Click **"Test Policy with Jupiter Swap Demo →"** link that appears after policy creation
-   - Or directly visit: [http://localhost:3000/demo/jupiter-swap](http://localhost:3000/demo/jupiter-swap)
-
-2. **Configure the Swap**:
-   - Organization ID and Delegated User ID will be pre-filled if coming from policy page
-   - Enter your wallet address (from the created sub-organization)
-   - Select tokens to swap (SOL ↔ USDC or USDT)
-   - Enter amount (e.g., 0.001 SOL)
-
-3. **Execute the Swap**:
-   - Click **"Swap [Token A] for [Token B]"**
-   - The swap will be signed using the delegated user's permissions
-   - Policy enforcement will be applied automatically
-
-4. **Observe Policy Enforcement**:
-   - ✅ **Success**: If the swap complies with all policies
-   - ⚠️ **Policy Violation**: If amount exceeds limits or Jupiter program not whitelisted
-   - View transaction on Solscan explorer link provided
-
-**URLs for Direct Access**:
-- Main Demo: `http://localhost:3000/demo/delegated-access`
-- Policy Setup: `http://localhost:3000/demo/delegated-policy`
-- Jupiter Swap: `http://localhost:3000/demo/jupiter-swap`
 
 ## 🔍 Understanding the Demo
 
@@ -214,8 +189,6 @@ After running the demo, you can:
 1. **View on Solana Explorer**: Click the provided links to see accounts on devnet
 2. **Test Different Configurations**: Run the demo again with different parameters
 3. **Modify Restrictions**: Try different amount limits and address combinations
-4. **Test Token Swaps**: Navigate to `/demo/jupiter-swap` to test policy enforcement with real DeFi operations
-5. **Verify Policy Enforcement**: Attempt swaps that violate policies to see restrictions in action
 
 ## 🔐 Security Notes
 

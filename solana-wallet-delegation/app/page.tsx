@@ -20,7 +20,7 @@ export default function Home() {
 
         <div className="mt-20">
           <h3 className="text-2xl font-semibold text-gray-800 mb-12">Demo Steps</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="relative">
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
@@ -41,21 +41,11 @@ export default function Home() {
               <div className="hidden md:block absolute top-8 -right-4 w-8 h-0.5 bg-gray-300"></div>
             </div>
 
-            <div className="relative">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-2xl font-bold text-blue-600">3</span>
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Create Delegated Access</h4>
-              </div>
-              <div className="hidden md:block absolute top-8 -right-4 w-8 h-0.5 bg-gray-300"></div>
-            </div>
-
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-2xl font-bold text-blue-600">4</span>
+                <span className="text-2xl font-bold text-blue-600">3</span>
               </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Execute Jupiter Swap</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">Create Delegated Access</h4>
             </div>
           </div>
         </div>

@@ -168,28 +168,6 @@ export class PolicyService {
   }
 
   /**
-   * Creates root user admin policy - allows root org users to manage sub-org
-   */
-  async createRootAdminPolicy(
-    organizationId: string,
-    rootUserId?: string
-  ): Promise<Policy> {
-    // If no specific user ID provided, allow any user from root org
-    const consensus = rootUserId
-      ? `approvers.any(user, user.id == '${rootUserId}')`
-      : 'true'; // Allow any authenticated user (from root org)
-
-    return this.createPolicy(
-      organizationId,
-      'Root Organization Admin Access',
-      POLICY_EFFECTS.ALLOW,
-      consensus,
-      'true',
-      'Policy granting root organization users full access to manage this sub-organization'
-    );
-  }
-
-  /**
    * Creates trader policy for trading account operations
    */
   async createTraderPolicy(
@@ -352,16 +330,14 @@ export class PolicyService {
    */
   async createProgramPolicy(
     organizationId: string,
-    userId: string,
-    allowedProgramIds: string[],
-    instructionLimit: number = 5
+    userTagId: string,
+    allowedProgramIds: string[]
   ): Promise<Policy> {
     const programConditions = allowedProgramIds
       .map(id => `'${id}'`)
       .join(', ');
 
     const condition = `
-      solana.tx.instructions.count() <= ${instructionLimit} &&
       solana.tx.instructions.all(instruction,
         instruction.program_id in [${programConditions}]
       )
@@ -369,11 +345,11 @@ export class PolicyService {
 
     return this.createPolicy(
       organizationId,
-      'Delegated Access - Program Restrictions',
+      'Policy restricting to specific Solana programs',
       POLICY_EFFECTS.ALLOW,
-      `approvers.any(user, user.id == '${userId}')`,
+      `approvers.any(user, user.tags.contains('${userTagId}'))`,
       condition,
-      `Policy restricting operations to ${allowedProgramIds.length} allowed programs with max ${instructionLimit} instructions per transaction`
+      `Policy restricting operations to programs: ${allowedProgramIds.join(', ')}`
     );
   }
 
@@ -384,41 +360,30 @@ export class PolicyService {
     organizationId: string,
     delegatedUserId: string,
     allowedAddresses: string | string[], // Accept single address or array
-    maxAmount?: number,
-    allowedPrograms?: string[],
-    instructionLimit?: number
+    maxAmount?: number
   ): Promise<Policy> {
     // Convert to array if single address provided (backward compatibility)
     const addresses = Array.isArray(allowedAddresses) ? allowedAddresses : [allowedAddresses];
 
-    // Include all necessary programs for Jupiter swaps
-    const programs = allowedPrograms || [
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',  // SPL Token Program
-      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb', // SPL Token-2022 Program
-      '11111111111111111111111111111111',               // System Program
-      'ComputeBudget111111111111111111111111111111',    // Compute Budget Program
-      'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4',   // Jupiter Aggregator V6
-      'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB',   // Jupiter V4
-      'JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph',   // Jupiter V3
-      '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',   // Raydium AMM
-      'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc',   // Whirlpool
-      '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1'    // Orca
-    ];
-
-    // Default instruction limit for swaps
-    const maxInstructions = instructionLimit || 50;
-
-    // Build program condition
-    const programCondition = programs.map(id => `'${id}'`).join(', ');
-
-    // Build address condition for transfers using simple format that works
-    const transferCondition = addresses.length === 1
+    // Build address condition for multiple addresses
+    const addressCondition = addresses.length === 1
       ? `transfer.to == '${addresses[0]}'`
       : `(${addresses.map(addr => `transfer.to == '${addr}'`).join(' || ')})`;
 
-    // Create a condition that allows Jupiter swaps with reasonable restrictions
-    // Since Turnkey doesn't support program_id checks, we'll use instruction count as the main restriction
-    let condition = `solana.tx.instructions.count() <= ${maxInstructions}`;
+    let condition = `
+      solana.tx.spl_transfers.any(transfer,
+        ${addressCondition}
+      )
+    `;
+
+    if (maxAmount) {
+      condition = `
+        solana.tx.spl_transfers.any(transfer,
+          ${addressCondition} &&
+          transfer.amount <= ${maxAmount}
+        )
+      `;
+    }
 
     const addressList = addresses.length > 3
       ? `${addresses.slice(0, 3).join(', ')}... (${addresses.length} total)`
@@ -426,57 +391,11 @@ export class PolicyService {
 
     return this.createPolicy(
       organizationId,
-      'Delegated Access - Transaction Policy',
+      'Delegated Access - Limited Transaction Policy',
       POLICY_EFFECTS.ALLOW,
       `approvers.any(user, user.id == '${delegatedUserId}')`,
       condition,
-      `Delegated access policy allowing transactions with max ${maxInstructions} instructions`
-    );
-  }
-
-
-  /**
-   * Creates Jupiter swap policy with instruction and amount limits
-   */
-  async createJupiterSwapPolicy(
-    organizationId: string,
-    delegatedUserId: string,
-    maxAmountPerSwap?: number
-  ): Promise<Policy> {
-    // Build condition - instruction count limit for complexity control
-    let condition = `solana.tx.instructions.count() <= 30`;
-
-    // Add amount restriction if specified
-    if (maxAmountPerSwap) {
-      condition += ` && solana.tx.spl_transfers.all(transfer, transfer.amount <= ${maxAmountPerSwap})`;
-    }
-
-    return this.createPolicy(
-      organizationId,
-      'Jupiter Swap Access Policy',
-      POLICY_EFFECTS.ALLOW,
-      `approvers.any(user, user.id == '${delegatedUserId}')`,
-      condition,
-      `Policy allowing transactions with max 30 instructions${maxAmountPerSwap ? ` and max amount ${maxAmountPerSwap} per transfer` : ''}`
-    );
-  }
-
-
-  /**
-   * Creates an emergency shutdown policy
-   */
-  async createEmergencyShutdownPolicy(
-    organizationId: string,
-    adminUserId: string
-  ): Promise<Policy> {
-    // This policy denies ALL transactions when activated
-    return this.createPolicy(
-      organizationId,
-      'EMERGENCY SHUTDOWN - All Operations Blocked',
-      POLICY_EFFECTS.DENY,
-      'true', // Applies to everyone
-      'true', // Denies everything
-      'Emergency shutdown activated - all operations are blocked until this policy is removed'
+      `Delegated access policy allowing SPL transfers to whitelisted addresses: ${addressList}${maxAmount ? ` with max amount ${maxAmount}` : ''}`
     );
   }
 
