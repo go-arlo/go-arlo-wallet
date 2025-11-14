@@ -11,15 +11,14 @@ export async function POST(request: NextRequest) {
       endUserId,
       allowedAddresses,
       maxTransactionAmount,
-      allowedPrograms,
       instructionLimit,
       updateRootQuorum
     } = body;
 
     // Validate required fields
-    if (!organizationId || !delegatedUserId || !allowedAddresses || allowedAddresses.length === 0) {
+    if (!organizationId || !delegatedUserId) {
       return NextResponse.json(
-        { error: 'Organization ID, delegated user ID, and at least one allowed address are required' },
+        { error: 'Organization ID and delegated user ID are required' },
         { status: 400 }
       );
     }
@@ -27,11 +26,47 @@ export async function POST(request: NextRequest) {
     const policyService = new PolicyService();
     const walletService = new WalletService();
 
+    // Get wallet IDs in the organization
+    const walletIds = await walletService.getWalletIds(organizationId);
+    if (walletIds.length === 0) {
+      return NextResponse.json(
+        { error: 'No wallets found in organization' },
+        { status: 404 }
+      );
+    }
+
+    // Get the first wallet with full account details
+    const wallet = await walletService.getWallet(walletIds[0], organizationId);
+    if (!wallet) {
+      return NextResponse.json(
+        { error: 'Failed to get wallet details' },
+        { status: 404 }
+      );
+    }
+
+    // Find the long-term storage account address
+    const longTermStorageAccount = wallet.accounts?.find(
+      account => account.accountType === 'LONG_TERM_STORAGE'
+    );
+
+    if (!longTermStorageAccount) {
+      return NextResponse.json(
+        { error: 'Long-term storage account not found' },
+        { status: 404 }
+      );
+    }
+
+    // Use the long-term storage address as the default allowed address
+    // If allowedAddresses were provided, use them; otherwise use the long-term storage address
+    const finalAllowedAddresses = allowedAddresses && allowedAddresses.length > 0
+      ? allowedAddresses
+      : [longTermStorageAccount.address];
+
     // Create the delegated access policy with restrictions
     const policy = await policyService.createDelegatedAccessPolicy(
       organizationId,
       delegatedUserId,
-      allowedAddresses, // Pass array of addresses
+      finalAllowedAddresses, // Pass array of addresses
       maxTransactionAmount
     );
 

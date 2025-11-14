@@ -196,12 +196,19 @@ export class WalletService {
    */
   async getWallet(walletId: string, organizationId: string): Promise<Wallet | null> {
     try {
-      const response = await this.apiClient.getWallet({
+      // Get wallet basic info
+      const walletResponse = await this.apiClient.getWallet({
         organizationId,
         walletId,
       });
 
-      const accounts: WalletAccount[] = response.wallet.accounts.map((acc, index) => ({
+      // Get wallet accounts separately
+      const accountsResponse = await this.apiClient.getWalletAccounts({
+        organizationId,
+        walletId,
+      });
+
+      const accounts: WalletAccount[] = accountsResponse.accounts.map((acc, index) => ({
         address: acc.address,
         publicKey: acc.publicKey || '',
         curve: 'CURVE_ED25519',
@@ -212,11 +219,11 @@ export class WalletService {
       }));
 
       return {
-        id: response.wallet.walletId,
-        name: response.wallet.walletName,
+        id: walletResponse.wallet.walletId,
+        name: walletResponse.wallet.walletName,
         organizationId,
         accounts,
-        createdAt: new Date(response.wallet.createdAt),
+        createdAt: new Date(walletResponse.wallet.createdAt),
       };
     } catch (error) {
       console.error('Failed to get wallet:', error);
@@ -234,7 +241,7 @@ export class WalletService {
       });
 
       return response.wallets.map(wallet => {
-        const accounts: WalletAccount[] = wallet.accounts.map((acc, index) => ({
+        const accounts: WalletAccount[] = (wallet.accounts || []).map((acc, index) => ({
           address: acc.address,
           publicKey: acc.publicKey || '',
           curve: 'CURVE_ED25519',
@@ -254,6 +261,22 @@ export class WalletService {
       });
     } catch (error) {
       console.error('Failed to list wallets:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Gets wallet IDs in an organization
+   */
+  async getWalletIds(organizationId: string): Promise<string[]> {
+    try {
+      const response = await this.apiClient.getWallets({
+        organizationId,
+      });
+
+      return response.wallets.map(wallet => wallet.walletId);
+    } catch (error) {
+      console.error('Failed to get wallet IDs:', error);
       return [];
     }
   }
