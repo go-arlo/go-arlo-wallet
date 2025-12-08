@@ -113,7 +113,6 @@ Python 3.11+ is required.
 4. **Configure environment variables:**
    ```bash
    cp .env.example .env
-   # Edit .env with your actual values
    ```
 
 ## Configuration
@@ -122,22 +121,22 @@ Python 3.11+ is required.
 
 #### Required Variables
 
-| Variable | Description | Example | Where to Find |
-|----------|-------------|---------|---------------|
-| `ANTHROPIC_API_KEY` | Claude API key | `sk-ant-api03-...` | [Anthropic Console](https://console.anthropic.com) |
-| `DELEGATED_WALLET_ADDRESS` | Public key of delegated wallet | `8FbYKGy88...` | From Turnkey or delegation demo |
-| `TURNKEY_ORGANIZATION_ID` | Your Turnkey org ID | `org_abc123...` | Turnkey dashboard |
+| Variable | Description |
+|----------|-------------|
+| `ANTHROPIC_API_KEY` | Claude API key for the LLM agent |
+| `DELEGATED_WALLET_ADDRESS` | Public key of delegated wallet from Turnkey |
+| `TURNKEY_ORGANIZATION_ID` | Your Turnkey organization ID |
 
 #### API Key Configuration (Required for Automated Signing)
 
-| Variable | Description | Example | How to Generate |
-|----------|-------------|---------|----------------|
-| `TURNKEY_API_PUBLIC_KEY` | P256 public key (hex) | `02abc123...` | Run `generate_api_keys.py` |
-| `TURNKEY_API_PRIVATE_KEY` | P256 private key (hex) | `abc123...` | Run `generate_api_keys.py` |
-| `MAIN_TURNKEY_API_PUBLIC_KEY` | Main org P256 public key | `03abc123...` | From main organization |
-| `MAIN_TURNKEY_API_PRIVATE_KEY` | Main org P256 private key | `def456...` | From main organization |
-| `MAIN_ORGANIZATION` | Main Turnkey organization ID | `org_main123...` | From main organization |
-| `DELEGATED_USER_ID` | Turnkey user ID | `user_xyz...` | From Turnkey dashboard |
+| Variable | Description |
+|----------|-------------|
+| `TURNKEY_API_PUBLIC_KEY` | P256 public key (hex) for delegated user API access |
+| `TURNKEY_API_PRIVATE_KEY` | P256 private key (hex) for delegated user API access |
+| `MAIN_TURNKEY_API_PUBLIC_KEY` | Main organization P256 public key (hex) |
+| `MAIN_TURNKEY_API_PRIVATE_KEY` | Main organization P256 private key (hex) |
+| `MAIN_ORGANIZATION` | Main Turnkey organization ID |
+| `DELEGATED_USER_ID` | Turnkey delegated user ID |
 
 #### Optional Configuration
 
