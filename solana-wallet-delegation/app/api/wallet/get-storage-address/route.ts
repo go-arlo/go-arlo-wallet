@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
 
     const walletService = new WalletService();
 
-    // Get wallet IDs in the organization
     const walletIds = await walletService.getWalletIds(organizationId);
 
     if (walletIds.length === 0) {
@@ -25,7 +24,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get the first wallet with full account details
     const wallet = await walletService.getWallet(walletIds[0], organizationId);
 
     if (!wallet) {
@@ -35,7 +33,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Find the long-term storage account address
     const longTermStorageAccount = wallet.accounts?.find(
       account => account.accountType === 'LONG_TERM_STORAGE'
     );

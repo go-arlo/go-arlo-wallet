@@ -17,8 +17,9 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.backends import default_backend
 
-logger = logging.getLogger(__name__)
+from generate_api_keys import create_api_stamp
 
+logger = logging.getLogger(__name__)
 
 class WalletManager:
     """Manages delegated wallet operations directly through Turnkey and Solana APIs."""
@@ -36,18 +37,16 @@ class WalletManager:
     ):
         self.delegated_wallet_address = delegated_wallet_address
         self.turnkey_organization_id = turnkey_organization_id
-        # Delegated user API keys (for transaction signing)
         self.turnkey_api_public_key = turnkey_api_public_key
         self.turnkey_api_private_key = turnkey_api_private_key
-        # Main account API keys (for creating API keys)
         self.main_turnkey_api_public_key = main_turnkey_api_public_key
         self.main_turnkey_api_private_key = main_turnkey_api_private_key
         self.turnkey_api_base_url = turnkey_api_base_url.rstrip('/')
         self.solana_rpc_url = solana_rpc_url
 
-    def create_api_stamp(self, request_body: Dict[str, Any]) -> str:
+    def create_api_stamp_instance(self, request_body: Dict[str, Any]) -> str:
         """
-        Create an API key stamp for Turnkey requests using the official SDK approach.
+        Create an API key stamp for Turnkey requests using delegated keys.
 
         Args:
             request_body: The request body to sign
@@ -58,128 +57,46 @@ class WalletManager:
         if not self.turnkey_api_private_key or not self.turnkey_api_public_key:
             raise ValueError("Turnkey API keys not configured")
 
-        # Create payload string exactly like official SDK
-        payload_str = json.dumps(request_body)
-
-        # Derive private key exactly like official SDK
-        private_key = ec.derive_private_key(int(self.turnkey_api_private_key, 16), ec.SECP256R1())
-
-        # Sign payload exactly like official SDK
-        signature = private_key.sign(payload_str.encode(), ec.ECDSA(hashes.SHA256()))
-
-        # Create stamp exactly like official SDK
-        stamp = {
-            "publicKey": self.turnkey_api_public_key,
-            "scheme": "SIGNATURE_SCHEME_TK_API_P256",
-            "signature": signature.hex(),
-        }
-
-        # Encode stamp exactly like official SDK
-        stamp_encoded = base64.urlsafe_b64encode(json.dumps(stamp).encode()).decode().rstrip("=")
-
-        # Debug logging
-        logger.info(f"Created stamp with public key: {self.turnkey_api_public_key[:20]}...")
-        logger.info(f"Request body JSON: {payload_str[:100]}...")
-        logger.info(f"Stamp: {stamp_encoded[:50]}...")
-
-        return stamp_encoded
-
-    def _create_stamp_with_main_keys(self, request_body: Dict[str, Any]) -> str:
-        """
-        Create an API stamp using main account keys with official SDK approach.
-
-        Args:
-            request_body: The request body to sign
-
-        Returns:
-            Base64URL encoded stamp
-        """
-        if not self.main_turnkey_api_private_key or not self.main_turnkey_api_public_key:
-            raise ValueError("Main Turnkey API keys not configured")
-
-        # Create payload string exactly like official SDK
-        payload_str = json.dumps(request_body)
-
-        # Derive private key exactly like official SDK
-        private_key = ec.derive_private_key(int(self.main_turnkey_api_private_key, 16), ec.SECP256R1())
-
-        # Sign payload exactly like official SDK
-        signature = private_key.sign(payload_str.encode(), ec.ECDSA(hashes.SHA256()))
-
-        # Create stamp exactly like official SDK
-        stamp = {
-            "publicKey": self.main_turnkey_api_public_key,
-            "scheme": "SIGNATURE_SCHEME_TK_API_P256",
-            "signature": signature.hex(),
-        }
-
-        # Encode stamp exactly like official SDK
-        stamp_encoded = base64.urlsafe_b64encode(json.dumps(stamp).encode()).decode().rstrip("=")
-
-        # Debug logging
-        logger.info(f"Using MAIN account keys for API key creation")
-        logger.info(f"Main public key: {self.main_turnkey_api_public_key[:20]}...")
-        logger.info(f"Request body JSON: {payload_str}")
-        logger.info(f"Signature hex: {signature.hex()}")
-        logger.info(f"Stamp: {stamp_encoded}")
-
-        return stamp_encoded
+        return create_api_stamp(request_body, self.turnkey_api_private_key, self.turnkey_api_public_key)
 
     def create_api_keys_for_user(
         self,
         user_id: str,
-        api_key_name: str = "Delegated Access Key"
+        api_key_name: str = "Delegated Access Key",
+        expiration_seconds: int = None
     ) -> Dict[str, Any]:
         """
-        Create API keys for a delegated user.
+        Create API keys for a delegated user using the generate_api_keys module.
 
         Args:
             user_id: The ID of the delegated user
             api_key_name: Name for the API key
+            expiration_seconds: Optional expiration time in seconds (None for no expiration)
 
         Returns:
             Response from Turnkey API
         """
         if not self.turnkey_api_public_key:
             raise ValueError("Turnkey API public key not configured")
+        if not self.main_turnkey_api_private_key or not self.main_turnkey_api_public_key:
+            raise ValueError("Main Turnkey API keys not configured for creating user API keys")
 
-        request_body = {
-            "type": "ACTIVITY_TYPE_CREATE_API_KEYS_V2",
-            "timestampMs": str(int(time.time() * 1000)),
-            "organizationId": self.turnkey_organization_id,
-            "parameters": {
-                "apiKeys": [
-                    {
-                        "apiKeyName": api_key_name,
-                        "publicKey": self.turnkey_api_public_key,
-                        "curveType": "API_KEY_CURVE_P256"
-                        # No expirationSeconds for indefinite expiration
-                    }
-                ],
-                "userId": user_id
-            }
-        }
-
-        # Create stamp using main account keys for API key creation
-        stamp = self._create_stamp_with_main_keys(request_body)
-
-        headers = {
-            "Content-Type": "application/json",
-            "X-Stamp": stamp
-        }
-
-        response = requests.post(
-            f"{self.turnkey_api_base_url}/public/v1/submit/create_api_keys",
-            json=request_body,
-            headers=headers,
-            timeout=30
+        from generate_api_keys import create_api_keys_for_user as create_keys
+        
+        success = create_keys(
+            delegated_public_key=self.turnkey_api_public_key,
+            user_id=user_id,
+            organization_id=self.turnkey_organization_id,
+            main_private_key=self.main_turnkey_api_private_key,
+            main_public_key=self.main_turnkey_api_public_key,
+            api_key_name=api_key_name,
+            expiration_seconds=expiration_seconds
         )
-
-        if response.status_code == 200:
-            return response.json()
+        
+        if success:
+            return {"status": "success", "userId": user_id}
         else:
-            logger.error(f"API key creation failed: {response.text}")
-            raise Exception(f"API key creation failed: {response.status_code}")
+            raise Exception("API key creation failed")
 
     def sign_transaction(
         self,
@@ -210,7 +127,7 @@ class WalletManager:
             }
         }
 
-        stamp = self.create_api_stamp(request_body)
+        stamp = self.create_api_stamp_instance(request_body)
 
         headers = {
             "Content-Type": "application/json",
@@ -228,7 +145,6 @@ class WalletManager:
             result = response.json()
             activity = result.get("activity", {})
 
-            # Wait for activity completion if needed
             if activity.get("status") == "ACTIVITY_STATUS_PENDING":
                 return self._poll_activity(activity.get("id"))
 
@@ -246,7 +162,7 @@ class WalletManager:
                 "organizationId": self.turnkey_organization_id
             }
 
-            stamp = self.create_api_stamp(request_body)
+            stamp = self.create_api_stamp_instance(request_body)
 
             response = requests.get(
                 f"{self.turnkey_api_base_url}/public/v1/activity/{activity_id}",
@@ -371,7 +287,6 @@ class WalletManager:
 
             logger.info(f"Received base64 transaction from Jupiter: {unsigned_transaction_b64[:100]}...")
 
-            # Convert base64 to hex for Turnkey
             import base64
             transaction_bytes = base64.b64decode(unsigned_transaction_b64)
             unsigned_transaction_hex = transaction_bytes.hex()
@@ -384,7 +299,6 @@ class WalletManager:
                 transaction_type="TRANSACTION_TYPE_SOLANA"
             )
 
-            # Extract signed transaction
             activity = signed_result.get("activity", {})
             result = activity.get("result", {})
             sign_result = result.get("signTransactionResult", {})
@@ -395,7 +309,6 @@ class WalletManager:
 
             logger.info(f"Signed transaction from Turnkey: {signed_transaction[:100]}...")
 
-            # Convert hex signed transaction back to base64 for Solana RPC
             try:
                 signed_bytes = bytes.fromhex(signed_transaction)
                 signed_transaction_b64 = base64.b64encode(signed_bytes).decode()
@@ -404,7 +317,7 @@ class WalletManager:
                 logger.error(f"Error converting signed transaction: {e}")
                 raise Exception(f"Failed to convert signed transaction: {e}")
 
-            # Step 4: Submit to Solana
+            # Step 4: Submit transaction
             send_result = self._make_solana_rpc_request(
                 "sendTransaction",
                 [signed_transaction_b64, {"encoding": "base64", "skipPreflight": False}]
@@ -454,10 +367,8 @@ class WalletManager:
             True if connections are healthy
         """
         try:
-            # Check Solana RPC
             health = self._make_solana_rpc_request("getHealth")
 
-            # Check if we have any Turnkey credentials (main or delegated)
             has_main_keys = bool(self.main_turnkey_api_public_key and self.main_turnkey_api_private_key)
             has_delegated_keys = bool(self.turnkey_api_public_key and self.turnkey_api_private_key)
 
@@ -485,13 +396,10 @@ class WalletManager:
             User setup information
         """
         if create_new_user or not user_id:
-            # This would typically involve creating a new user through Turnkey
-            # For now, we'll assume the user exists
             logger.info("Using existing delegated user configuration")
 
         if user_id and self.turnkey_api_public_key and self.turnkey_api_private_key:
             try:
-                # Create API keys for the user if not already done
                 result = self.create_api_keys_for_user(user_id)
                 logger.info(f"API keys configured for user: {user_id}")
                 return result

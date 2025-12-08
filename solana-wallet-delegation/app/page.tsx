@@ -8,7 +8,7 @@ export default function Home() {
           Solana Wallet with Delegated Access
         </h1>
         <p className="text-xl text-gray-600 mb-12">
-          Secure sub-organization isolation with policy-based access control for automated Solana transactions
+          Create policy-based access controls for automated transactions
         </p>
 
         <Link

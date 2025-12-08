@@ -41,8 +41,6 @@ Ensure you have:
 ### 1. Clone and Install
 
 ```bash
-# Clone the repository
-git clone [repository-url]
 cd solana-wallet-delegation
 
 # Install dependencies
@@ -92,8 +90,8 @@ open http://localhost:3000
 
 ### Step 1: Access the Demo
 
-1. Navigate to [http://localhost:3000](http://localhost:3000)
-2. Click the blue **"Start Demo"** button
+1. Navigate to [http://localhost:3000]
+2. Click the **"Start Demo"** button
 3. You'll be taken to the delegated access configuration page
 
 ### Step 2: Configure Sub-Organization
@@ -102,7 +100,7 @@ Fill out the first section with these recommended values:
 
 | Field | Recommended Value | Purpose |
 |-------|------------------|---------|
-| **Organization Name** | "DeFi Trading Service" | Name for your sub-organization |
+| **Organization Name** | "Org name" | Name for your sub-organization |
 | **End User Email** | your-email@example.com | The user who maintains full control |
 | **Delegated User API Public Key** | [Your API Public Key] | Backend service authentication |
 
@@ -181,14 +179,6 @@ After creation, you'll see confirmation of:
 | **Amount Limits** | Per-transaction maximum enforced | Caps potential losses from compromised delegation |
 | **Program Restrictions** | Only specific Solana programs allowed | Prevents unauthorized contract interactions |
 | **Root Quorum Exclusion** | Delegated user removed from admin quorum | Cannot escalate own privileges |
-
-## 🧪 Testing the Setup
-
-After running the demo, you can:
-
-1. **View on Solana Explorer**: Click the provided links to see accounts on devnet
-2. **Test Different Configurations**: Run the demo again with different parameters
-3. **Modify Restrictions**: Try different amount limits and address combinations
 
 ## 🔐 Security Notes
 

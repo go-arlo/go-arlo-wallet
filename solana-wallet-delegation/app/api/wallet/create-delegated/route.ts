@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
       rateLimit
     } = body;
 
-    // Validate required fields
     if (!name || !endUserEmail || !delegatedUserPublicKey) {
       return NextResponse.json(
         { error: 'Name, end user email, and delegated user public key are required' },

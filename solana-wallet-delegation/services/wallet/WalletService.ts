@@ -39,7 +39,6 @@ export class WalletService {
     endUserId: string;
   }> {
     try {
-      // Use the main organization ID from environment
       const mainOrgId = process.env.TURNKEY_ORG_ID || process.env.NEXT_PUBLIC_ORGANIZATION_ID;
       if (!mainOrgId) {
         throw new Error('TURNKEY_ORG_ID or NEXT_PUBLIC_ORGANIZATION_ID environment variable is required');
@@ -82,13 +81,11 @@ export class WalletService {
       const delegatedUserId = subOrgResponse.rootUserIds?.[0] || '';
       const endUserId = subOrgResponse.rootUserIds?.[1] || '';
 
-      // Get wallet accounts
       const walletAccountsResponse = await this.apiClient.getWalletAccounts({
         organizationId: subOrgId,
         walletId: walletId,
       });
 
-      // Map accounts to our types
       const accounts: WalletAccount[] = walletAccountsResponse.accounts.map((acc, index) => ({
         address: acc.address,
         publicKey: acc.publicKey || '',
@@ -99,7 +96,6 @@ export class WalletService {
         accountType: index === 0 ? 'TRADING' : 'LONG_TERM_STORAGE',
       }));
 
-      // Create wallet object
       const wallet: Wallet = {
         id: walletId,
         name: `${config.name}-Wallet`,
@@ -108,7 +104,6 @@ export class WalletService {
         createdAt: new Date(),
       };
 
-      // Create sub-organization object
       const subOrganization: SubOrganization = {
         id: subOrgId,
         name: config.name,
@@ -133,9 +128,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Updates the root quorum to exclude the delegated user
-   */
   async updateRootQuorum(
     organizationId: string,
     endUserId: string,
@@ -145,7 +137,7 @@ export class WalletService {
       await this.apiClient.updateRootQuorum({
         organizationId,
         threshold,
-        userIds: [endUserId], // Only include the end user
+        userIds: [endUserId],
       });
     } catch (error) {
       console.error('Error updating root quorum:', error);
@@ -153,9 +145,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Creates a new wallet in an existing sub-organization
-   */
   async createWallet(
     organizationId: string,
     walletName: string,
@@ -191,18 +180,13 @@ export class WalletService {
     }
   }
 
-  /**
-   * Retrieves wallet details by ID
-   */
   async getWallet(walletId: string, organizationId: string): Promise<Wallet | null> {
     try {
-      // Get wallet basic info
       const walletResponse = await this.apiClient.getWallet({
         organizationId,
         walletId,
       });
 
-      // Get wallet accounts separately
       const accountsResponse = await this.apiClient.getWalletAccounts({
         organizationId,
         walletId,
@@ -231,9 +215,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Lists all wallets in an organization
-   */
   async listWallets(organizationId: string): Promise<Wallet[]> {
     try {
       const response = await this.apiClient.getWallets({
@@ -265,9 +246,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Gets wallet IDs in an organization
-   */
   async getWalletIds(organizationId: string): Promise<string[]> {
     try {
       const response = await this.apiClient.getWallets({
@@ -281,9 +259,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Exports wallet mnemonic (requires proper authentication)
-   */
   async exportWallet(
     walletId: string,
     organizationId: string,
@@ -306,9 +281,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Imports a wallet from mnemonic
-   */
   async importWallet(
     organizationId: string,
     walletName: string,
@@ -346,9 +318,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Derives additional accounts for an existing wallet
-   */
   async deriveAccount(
     walletId: string,
     organizationId: string,
@@ -383,9 +352,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Gets the balance of a wallet account
-   */
   async getAccountBalance(address: string): Promise<number> {
     try {
       const response = await fetch(process.env.NEXT_PUBLIC_SOLANA_RPC_URL!, {
@@ -407,9 +373,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * Generates wallet accounts based on configuration
-   */
   private generateWalletAccounts(config: WalletConfig): any[] {
     const accounts = [];
 

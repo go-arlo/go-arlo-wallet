@@ -18,9 +18,6 @@ export class SubOrganizationManager {
     this.apiClient = this.client.apiClient();
   }
 
-  /**
-   * Creates a user tag for role-based access control
-   */
   async createUserTag(
     organizationId: string,
     tagName: string,
@@ -43,9 +40,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Creates a new user with specified tags
-   */
   async createUser(
     organizationId: string,
     userName: string,
@@ -77,9 +71,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Updates user information
-   */
   async updateUser(
     organizationId: string,
     userId: string,
@@ -104,9 +95,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Retrieves user details
-   */
   async getUser(organizationId: string, userId: string): Promise<User | null> {
     try {
       const response = await this.apiClient.getUser({
@@ -129,9 +117,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Lists all users in an organization
-   */
   async listUsers(organizationId: string): Promise<User[]> {
     try {
       const response = await this.apiClient.getUsers({
@@ -153,9 +138,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Deletes a user
-   */
   async deleteUser(organizationId: string, userId: string): Promise<boolean> {
     try {
       await this.apiClient.deleteUser({
@@ -169,9 +151,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Creates API credentials for a user
-   */
   async createAPIKey(
     organizationId: string,
     userId: string,
@@ -194,9 +173,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Creates a passkey authenticator for a user
-   */
   async createPasskey(
     organizationId: string,
     userId: string,
@@ -220,9 +196,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Updates sub-organization configuration
-   */
   async updateSubOrganization(
     organizationId: string,
     updates: {
@@ -244,9 +217,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Gets sub-organization details
-   */
   async getSubOrganization(organizationId: string): Promise<SubOrganization | null> {
     try {
       const response = await this.apiClient.getOrganizationConfig({
@@ -271,9 +241,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Sets up default user tags for a new sub-organization
-   */
   async setupDefaultTags(organizationId: string): Promise<{
     adminTagId: string;
     traderTagId: string;
@@ -290,9 +257,6 @@ export class SubOrganizationManager {
     };
   }
 
-  /**
-   * Adds a root user to the sub-organization
-   */
   async addRootUser(
     organizationId: string,
     userId: string
@@ -316,9 +280,6 @@ export class SubOrganizationManager {
     }
   }
 
-  /**
-   * Removes a root user from the sub-organization
-   */
   async removeRootUser(
     organizationId: string,
     userId: string

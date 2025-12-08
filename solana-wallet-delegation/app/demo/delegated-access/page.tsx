@@ -70,7 +70,7 @@ export default function DelegatedAccessDemo() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">Delegated Access Demo - Step 1</h1>
         <p className="text-gray-600 mt-2">
-          Create a sub-organization with two root users (end user and delegated user) for secure backend operations
+          Create a sub-organization with two root users (end user and delegated user)
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
           <h3 className="font-medium text-blue-800 mb-2">Workflow Overview:</h3>
@@ -171,9 +171,9 @@ export default function DelegatedAccessDemo() {
             <div className="flex items-center">
               <div className="text-green-600 text-2xl mr-3">✅</div>
               <div>
-                <h3 className="text-lg font-semibold text-green-800">Delegated Access Created!</h3>
+                <h3 className="text-lg font-semibold text-green-800">Sub-Organization Created!</h3>
                 <p className="text-green-700 mt-1">
-                  Sub-organization with restricted delegated access has been configured.
+                  Sub-organization with two users has been configured.
                 </p>
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function DelegatedAccessDemo() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-blue-800 mb-2">Setup Complete</h3>
             <div className="text-blue-700 space-y-2 text-sm">
-              <p>✅ Sub-organization created with isolation</p>
+              <p>✅ Sub-organization created</p>
               <p>✅ Delegated user has API key access</p>
               <p>✅ End user has email-based access</p>
               <p>✅ Wallet created with HD derivation</p>

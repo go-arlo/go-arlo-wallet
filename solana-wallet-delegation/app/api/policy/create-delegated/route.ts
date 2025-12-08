@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
       updateRootQuorum
     } = body;
 
-    // Validate required fields
+    console.log('Creating policy with addresses:', allowedAddresses);
+
     if (!organizationId || !delegatedUserId) {
       return NextResponse.json(
         { error: 'Organization ID and delegated user ID are required' },
@@ -26,7 +27,6 @@ export async function POST(request: NextRequest) {
     const policyService = new PolicyService();
     const walletService = new WalletService();
 
-    // Get wallet IDs in the organization
     const walletIds = await walletService.getWalletIds(organizationId);
     if (walletIds.length === 0) {
       return NextResponse.json(
@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the first wallet with full account details
     const wallet = await walletService.getWallet(walletIds[0], organizationId);
     if (!wallet) {
       return NextResponse.json(
@@ -44,7 +43,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the long-term storage account address
     const longTermStorageAccount = wallet.accounts?.find(
       account => account.accountType === 'LONG_TERM_STORAGE'
     );
@@ -56,18 +54,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use the long-term storage address as the default allowed address
-    // If allowedAddresses were provided, use them; otherwise use the long-term storage address
-    const finalAllowedAddresses = allowedAddresses && allowedAddresses.length > 0
-      ? allowedAddresses
-      : [longTermStorageAccount.address];
+    // Validate that at least one allowed address is provided
+    if (!allowedAddresses || allowedAddresses.length === 0) {
+      return NextResponse.json(
+        { error: 'At least one allowed address must be provided' },
+        { status: 400 }
+      );
+    }
+
+    console.log('Final allowed addresses:', allowedAddresses);
 
     // Create the delegated access policy with restrictions
     const policy = await policyService.createDelegatedAccessPolicy(
       organizationId,
       delegatedUserId,
-      finalAllowedAddresses, // Pass array of addresses
-      maxTransactionAmount
+      allowedAddresses,
+      maxTransactionAmount,
+      instructionLimit
     );
 
     let rootQuorumUpdated = false;
@@ -79,7 +82,6 @@ export async function POST(request: NextRequest) {
         rootQuorumUpdated = true;
       } catch (error) {
         console.warn('Failed to update root quorum:', error);
-        // Continue even if root quorum update fails
       }
     }
 

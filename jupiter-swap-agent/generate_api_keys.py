@@ -22,7 +22,6 @@ from cryptography.hazmat.backends import default_backend
 from dotenv import load_dotenv
 import requests
 
-# Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -35,25 +34,20 @@ load_dotenv()
 def generate_p256_keypair():
     """Generate a P256 (secp256r1) key pair."""
 
-    # Generate private key
     private_key = ec.generate_private_key(
         ec.SECP256R1(),
         default_backend()
     )
 
-    # Get the private key as raw bytes
     private_numbers = private_key.private_numbers()
     private_key_bytes = private_numbers.private_value.to_bytes(32, 'big')
     private_key_hex = private_key_bytes.hex()
 
-    # Get public key
     public_key = private_key.public_key()
     public_numbers = public_key.public_numbers()
 
-    # Format public key as compressed point (33 bytes)
     x_bytes = public_numbers.x.to_bytes(32, 'big')
 
-    # For compressed format: 02 if y is even, 03 if y is odd
     if public_numbers.y % 2 == 0:
         public_key_bytes = b'\x02' + x_bytes
     else:
@@ -78,7 +72,6 @@ def create_api_stamp(request_body: Dict[str, Any], private_key_hex: str, public_
     """
     logger.info("Creating API stamp...")
 
-    # Load the private key
     private_key_bytes = bytes.fromhex(private_key_hex)
     private_number = int.from_bytes(private_key_bytes, 'big')
     private_key = ec.derive_private_key(
@@ -87,14 +80,12 @@ def create_api_stamp(request_body: Dict[str, Any], private_key_hex: str, public_
         default_backend()
     )
 
-    # Sign the JSON-encoded request body
     request_json = json.dumps(request_body, separators=(',', ':'))
     message_bytes = request_json.encode('utf-8')
 
     logger.info(f"Request JSON: {request_json}")
     logger.info(f"Message bytes length: {len(message_bytes)}")
 
-    # Sign using ECDSA with SHA256
     signature = private_key.sign(
         message_bytes,
         ec.ECDSA(hashes.SHA256())
@@ -102,14 +93,12 @@ def create_api_stamp(request_body: Dict[str, Any], private_key_hex: str, public_
 
     logger.info(f"Signature (hex): {signature.hex()}")
 
-    # Create the stamp
     stamp = {
         "publicKey": public_key_hex,
         "signature": signature.hex(),
         "scheme": "SIGNATURE_SCHEME_TK_API_P256"
     }
 
-    # Base64URL encode the stamp
     stamp_json = json.dumps(stamp, separators=(',', ':'))
     stamp_encoded = base64.urlsafe_b64encode(
         stamp_json.encode()
@@ -127,7 +116,8 @@ def create_api_keys_for_user(
     organization_id: str,
     main_private_key: str,
     main_public_key: str,
-    api_key_name: str = "Delegated Access Key"
+    api_key_name: str = "Delegated Access Key",
+    expiration_seconds: int = None
 ) -> bool:
     """
     Create API keys for a delegated user using main account credentials.
@@ -139,6 +129,7 @@ def create_api_keys_for_user(
         main_private_key: Main account private key for authentication
         main_public_key: Main account public key for authentication
         api_key_name: Name for the API key
+        expiration_seconds: Optional expiration time in seconds (None for no expiration)
 
     Returns:
         True if successful, False otherwise
@@ -151,20 +142,26 @@ def create_api_keys_for_user(
     logger.info(f"User ID: {user_id}")
     logger.info(f"Organization ID: {organization_id}")
     logger.info(f"Main public key: {main_public_key}")
+    if expiration_seconds:
+        logger.info(f"Expiration: {expiration_seconds} seconds")
+    else:
+        logger.info("Expiration: None (indefinite)")
+
+    api_key_config = {
+        "apiKeyName": api_key_name,
+        "publicKey": delegated_public_key,
+        "curveType": "API_KEY_CURVE_P256"
+    }
+    
+    if expiration_seconds is not None:
+        api_key_config["expirationSeconds"] = str(expiration_seconds)
 
     request_body = {
         "type": "ACTIVITY_TYPE_CREATE_API_KEYS_V2",
         "timestampMs": str(int(time.time() * 1000)),
         "organizationId": organization_id,
         "parameters": {
-            "apiKeys": [
-                {
-                    "apiKeyName": api_key_name,
-                    "publicKey": delegated_public_key,
-                    "curveType": "API_KEY_CURVE_P256"
-                    # No expirationSeconds for indefinite expiration
-                }
-            ],
+            "apiKeys": [api_key_config],
             "userId": user_id
         }
     }
@@ -172,7 +169,6 @@ def create_api_keys_for_user(
     logger.info(f"Request body: {json.dumps(request_body, indent=2)}")
 
     try:
-        # Create stamp using main account keys
         stamp = create_api_stamp(request_body, main_private_key, main_public_key)
 
         headers = {
@@ -182,7 +178,6 @@ def create_api_keys_for_user(
 
         logger.info(f"Request headers: {headers}")
 
-        # Make the API request
         url = "https://api.turnkey.com/public/v1/submit/create_api_keys"
         logger.info(f"Making request to: {url}")
 
@@ -221,6 +216,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate P256 keys and setup Turnkey API keys")
     parser.add_argument("--setup", action="store_true", help="Also create API keys in Turnkey")
     parser.add_argument("--user-id", help="Delegated user ID (if not in .env)")
+    parser.add_argument("--expiration", type=int, help="API key expiration in seconds (default: no expiration)")
     args = parser.parse_args()
 
     print("🔑 Generating P256 Key Pair for Turnkey API Authentication")
@@ -238,7 +234,6 @@ def main():
     print("3. Use the public key when creating API keys in Turnkey")
     print("4. These keys authenticate your agent with Turnkey API")
 
-    # Option to save to file
     save_to_env = input("\n💾 Append to .env file? (y/n): ").strip().lower()
     if save_to_env == 'y':
         env_file = '.env'
@@ -251,13 +246,11 @@ def main():
         else:
             print(f"❌ {env_file} not found. Please create it first.")
 
-    # Optional API key setup
     if args.setup:
         print("\n" + "=" * 60)
         print("SETTING UP API KEYS IN TURNKEY")
         print("=" * 60)
 
-        # Get required environment variables
         user_id = args.user_id or os.getenv("DELEGATED_USER_ID")
         organization_id = os.getenv("TURNKEY_ORGANIZATION_ID")
         main_private_key = os.getenv("MAIN_TURNKEY_API_PRIVATE_KEY")
@@ -276,13 +269,13 @@ def main():
             print("\nPlease set these in your .env file and try again.")
             return
 
-        # Create API keys
         success = create_api_keys_for_user(
             delegated_public_key=public_key_hex,
             user_id=user_id,
             organization_id=organization_id,
             main_private_key=main_private_key,
-            main_public_key=main_public_key
+            main_public_key=main_public_key,
+            expiration_seconds=args.expiration
         )
 
         if success:

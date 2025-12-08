@@ -25,13 +25,14 @@ export default function DelegatedPolicyDemo() {
     organizationId: '',
     delegatedUserId: '',
     endUserId: '',
-    allowedAddresses: [], // Will be populated with long-term storage address from API
+    allowedAddresses: [] as string[],
     maxTransactionAmount: 1000000, // 0.001 SOL in lamports
     instructionLimit: 5,
     updateRootQuorum: true,
   });
   const [longTermStorageAddress, setLongTermStorageAddress] = useState<string>('');
   const [loadingAddress, setLoadingAddress] = useState(false);
+  const [newAddress, setNewAddress] = useState<string>('');
 
   // Parse URL parameters if they exist (from delegated access creation)
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function DelegatedPolicyDemo() {
     const fetchLongTermStorageAddress = async () => {
       if (!formData.organizationId) {
         setLongTermStorageAddress('');
+        setFormData(prev => ({ ...prev, allowedAddresses: [] }));
         return;
       }
 
@@ -60,12 +62,19 @@ export default function DelegatedPolicyDemo() {
 
         if (response.ok && data.address) {
           setLongTermStorageAddress(data.address);
+          // Automatically add long-term storage address to allowed addresses
+          setFormData(prev => ({
+            ...prev,
+            allowedAddresses: [data.address]
+          }));
         } else {
           setLongTermStorageAddress('');
+          setFormData(prev => ({ ...prev, allowedAddresses: [] }));
         }
       } catch (error) {
         console.error('Failed to fetch storage address:', error);
         setLongTermStorageAddress('');
+        setFormData(prev => ({ ...prev, allowedAddresses: [] }));
       } finally {
         setLoadingAddress(false);
       }
@@ -106,6 +115,29 @@ export default function DelegatedPolicyDemo() {
     setError(null);
   };
 
+  const handleAddAddress = () => {
+    if (!newAddress.trim()) return;
+    
+    // Check if address already exists
+    if (formData.allowedAddresses.includes(newAddress.trim())) {
+      alert('This address is already in the list');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      allowedAddresses: [...prev.allowedAddresses, newAddress.trim()]
+    }));
+    setNewAddress('');
+  };
+
+  const handleRemoveAddress = (addressToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      allowedAddresses: prev.allowedAddresses.filter(addr => addr !== addressToRemove)
+    }));
+  };
+
 
 
   return (
@@ -116,7 +148,7 @@ export default function DelegatedPolicyDemo() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">Delegated Access Policy Management</h1>
         <p className="text-gray-600 mt-2">
-          Create restrictive policies for delegated users that only allow transfers to the long-term storage wallet
+          Create restrictive policies for delegated users
         </p>
       </div>
 
@@ -172,34 +204,71 @@ export default function DelegatedPolicyDemo() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allowed Address
+                    Allowed Addresses
                   </label>
-                  <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
-                    {loadingAddress ? (
+                  
+                  {loadingAddress ? (
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
                       <div className="flex items-center space-x-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                         <p className="text-sm text-gray-600">Loading long-term storage address...</p>
                       </div>
-                    ) : longTermStorageAddress ? (
-                      <>
-                        <p className="text-xs text-gray-500 mb-2">Long-term storage wallet address:</p>
-                        <p className="text-sm font-mono bg-white border rounded px-2 py-1 break-all">
-                          {longTermStorageAddress}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          The delegated user will only be able to send transactions to this address.
-                        </p>
-                      </>
-                    ) : formData.organizationId ? (
-                      <p className="text-sm text-red-600">
-                        Unable to load long-term storage address. Please check the organization ID.
+                    </div>
+                  ) : (
+                    <>
+                      {/* Display current allowed addresses */}
+                      <div className="space-y-2 mb-3">
+                        {formData.allowedAddresses.length === 0 ? (
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                            <p className="text-sm text-yellow-700">
+                              {formData.organizationId 
+                                ? 'No addresses configured. At least one address must be added to create the policy.'
+                                : 'Enter an organization ID to automatically load the long-term storage address.'}
+                            </p>
+                          </div>
+                        ) : (
+                          formData.allowedAddresses.map((address, index) => (
+                            <div key={index} className="flex items-center justify-between bg-white border border-gray-200 rounded-md p-3">
+                              <div className="flex-1 mr-3">
+                                {address === longTermStorageAddress && (
+                                  <p className="text-xs text-blue-600 font-medium mb-1">Long-term storage (default)</p>
+                                )}
+                                <p className="text-sm font-mono break-all">{address}</p>
+                              </div>
+                              <button
+                                onClick={() => handleRemoveAddress(address)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium px-2"
+                                title="Remove address"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {/* Add new address input */}
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={newAddress}
+                          onChange={(e) => setNewAddress(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddAddress()}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                          placeholder="Add additional Solana address (base58)"
+                        />
+                        <button
+                          onClick={handleAddAddress}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          Add
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        The delegated user will only be able to send transactions to these addresses.
                       </p>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        Enter an organization ID to view the long-term storage address.
-                      </p>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
 
                 <div>
@@ -254,26 +323,9 @@ export default function DelegatedPolicyDemo() {
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <h4 className="font-medium text-blue-800 mb-2">Policy Preview</h4>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p><strong>Effect:</strong> ALLOW</p>
-              <p><strong>Who can use:</strong> Only the delegated user</p>
-              <p><strong>Restrictions:</strong></p>
-              <ul className="list-disc list-inside ml-4 space-y-1">
-                <li>Can only send SPL transfers to the long-term storage wallet address</li>
-                {formData.maxTransactionAmount && (
-                  <li>Maximum amount per transaction: {formData.maxTransactionAmount.toLocaleString()} lamports</li>
-                )}
-                <li>Maximum {formData.instructionLimit} instructions per transaction</li>
-                <li>Restricted to standard Solana programs (Token, System, and Memo programs)</li>
-              </ul>
-            </div>
-          </div>
-
           <button
             onClick={handleCreatePolicy}
-            disabled={isCreating || !formData.organizationId || !formData.delegatedUserId}
+            disabled={isCreating || !formData.organizationId || !formData.delegatedUserId || formData.allowedAddresses.length === 0}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-4 rounded-lg font-medium transition-colors"
           >
             {isCreating ? 'Creating Policy...' : 'Create Delegated Access Policy'}

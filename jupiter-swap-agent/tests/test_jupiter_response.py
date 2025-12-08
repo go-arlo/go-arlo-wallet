@@ -80,7 +80,6 @@ def test_jupiter_response():
     print(f"First 100 chars: {unsigned_transaction[:100]}")
     print(f"Last 50 chars: {unsigned_transaction[-50:]}")
 
-    # Check if it's base64
     import base64
     try:
         decoded = base64.b64decode(unsigned_transaction)
@@ -94,7 +93,6 @@ def test_jupiter_response():
     except Exception as e:
         print(f"❌ Not valid base64: {e}")
 
-    # Check encoding
     if unsigned_transaction.startswith('Q'):
         print("🔍 Transaction starts with 'Q' - likely base64 encoded")
     elif len(unsigned_transaction) % 2 == 0:
