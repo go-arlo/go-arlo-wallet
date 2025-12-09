@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Solana Wallet with Delegation",
-  description: "Advanced Solana wallet with delegation capabilities powered by Turnkey",
+  description: "Advanced Solana wallet with delegation capabilities",
 };
 
 export default function RootLayout({

@@ -204,7 +204,7 @@ export class DelegationService {
       this.activeDelegations.delete(delegationId);
 
       // Log the revocation
-      console.log(`Delegation ${delegationId} revoked: ${reason}`);
+      console.info(`Delegation ${delegationId} revoked: ${reason}`);
 
       return true;
     } catch (error) {
@@ -234,7 +234,7 @@ export class DelegationService {
     }
 
     // Log emergency action
-    console.log(`Emergency revocation by ${userId}: ${revoked} revoked, ${failed} failed. Reason: ${reason}`);
+    console.info(`Emergency revocation by ${userId}: ${revoked} revoked, ${failed} failed. Reason: ${reason}`);
 
     return { revoked, failed };
   }
@@ -332,7 +332,7 @@ export class DelegationService {
 
     for (const id of expired) {
       this.activeDelegations.delete(id);
-      console.log(`Cleaned up expired delegation: ${id}`);
+      console.info(`Cleaned up expired delegation: ${id}`);
     }
   }
 }

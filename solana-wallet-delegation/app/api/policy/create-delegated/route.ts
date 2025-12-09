@@ -11,15 +11,15 @@ export async function POST(request: NextRequest) {
       endUserId,
       allowedAddresses,
       maxTransactionAmount,
-      allowedPrograms,
       instructionLimit,
       updateRootQuorum
     } = body;
 
-    // Validate required fields
-    if (!organizationId || !delegatedUserId || !allowedAddresses || allowedAddresses.length === 0) {
+    console.info('Creating policy with addresses:', allowedAddresses);
+
+    if (!organizationId || !delegatedUserId) {
       return NextResponse.json(
-        { error: 'Organization ID, delegated user ID, and at least one allowed address are required' },
+        { error: 'Organization ID and delegated user ID are required' },
         { status: 400 }
       );
     }
@@ -27,24 +27,58 @@ export async function POST(request: NextRequest) {
     const policyService = new PolicyService();
     const walletService = new WalletService();
 
-    // Create the delegated access policy with restrictions
+    const walletIds = await walletService.getWalletIds(organizationId);
+    if (walletIds.length === 0) {
+      return NextResponse.json(
+        { error: 'No wallets found in organization' },
+        { status: 404 }
+      );
+    }
+
+    const wallet = await walletService.getWallet(walletIds[0], organizationId);
+    if (!wallet) {
+      return NextResponse.json(
+        { error: 'Failed to get wallet details' },
+        { status: 404 }
+      );
+    }
+
+    const longTermStorageAccount = wallet.accounts?.find(
+      account => account.accountType === 'LONG_TERM_STORAGE'
+    );
+
+    if (!longTermStorageAccount) {
+      return NextResponse.json(
+        { error: 'Long-term storage account not found' },
+        { status: 404 }
+      );
+    }
+
+    if (!allowedAddresses || allowedAddresses.length === 0) {
+      return NextResponse.json(
+        { error: 'At least one allowed address must be provided' },
+        { status: 400 }
+      );
+    }
+
+    console.info('Final allowed addresses:', allowedAddresses);
+
     const policy = await policyService.createDelegatedAccessPolicy(
       organizationId,
       delegatedUserId,
-      allowedAddresses, // Pass array of addresses
-      maxTransactionAmount
+      allowedAddresses,
+      maxTransactionAmount,
+      instructionLimit
     );
 
     let rootQuorumUpdated = false;
 
-    // If requested, update root quorum to exclude delegated user
     if (updateRootQuorum && endUserId) {
       try {
         await walletService.updateRootQuorum(organizationId, endUserId, 1);
         rootQuorumUpdated = true;
       } catch (error) {
         console.warn('Failed to update root quorum:', error);
-        // Continue even if root quorum update fails
       }
     }
 

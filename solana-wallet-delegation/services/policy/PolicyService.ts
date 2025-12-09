@@ -18,9 +18,6 @@ export class PolicyService {
     this.apiClient = this.client.apiClient();
   }
 
-  /**
-   * Creates a new policy
-   */
   async createPolicy(
     organizationId: string,
     name: string,
@@ -55,9 +52,6 @@ export class PolicyService {
     }
   }
 
-  /**
-   * Updates an existing policy
-   */
   async updatePolicy(
     organizationId: string,
     policyId: string,
@@ -83,9 +77,6 @@ export class PolicyService {
     }
   }
 
-  /**
-   * Retrieves a policy by ID
-   */
   async getPolicy(organizationId: string, policyId: string): Promise<Policy | null> {
     try {
       const response = await this.apiClient.getPolicy({
@@ -109,9 +100,6 @@ export class PolicyService {
     }
   }
 
-  /**
-   * Lists all policies in an organization
-   */
   async listPolicies(organizationId: string): Promise<Policy[]> {
     try {
       const response = await this.apiClient.getPolicies({
@@ -134,9 +122,6 @@ export class PolicyService {
     }
   }
 
-  /**
-   * Deletes a policy
-   */
   async deletePolicy(organizationId: string, policyId: string): Promise<boolean> {
     try {
       await this.apiClient.deletePolicy({
@@ -150,9 +135,6 @@ export class PolicyService {
     }
   }
 
-  /**
-   * Creates admin policy with unrestricted access
-   */
   async createAdminPolicy(
     organizationId: string,
     adminTagId: string
@@ -167,9 +149,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates trader policy for trading account operations
-   */
   async createTraderPolicy(
     organizationId: string,
     traderTagId: string,
@@ -194,9 +173,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates policy for depositing to long-term storage
-   */
   async createDepositPolicy(
     organizationId: string,
     userTagId: string,
@@ -219,9 +195,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates policy to deny arbitrary transfers
-   */
   async createDenyArbitraryTransfersPolicy(
     organizationId: string,
     userTagId: string,
@@ -245,9 +218,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates SPL token transfer policy
-   */
   async createSPLTokenTransferPolicy(
     organizationId: string,
     userTagId: string,
@@ -274,9 +244,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates time-based delegation policy
-   */
   async createTimeBoundPolicy(
     organizationId: string,
     userId: string,
@@ -298,17 +265,12 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates quota-based policy with spending limits
-   */
   async createQuotaPolicy(
     organizationId: string,
     userId: string,
     dailyLimit: number,
     weeklyLimit: number
   ): Promise<Policy> {
-    // Note: Actual quota tracking would need to be implemented separately
-    // This is a simplified version showing the concept
     const condition = `
       solana.tx.spl_transfers.all(transfer,
         transfer.amount <= ${dailyLimit}
@@ -325,9 +287,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates program-specific policy
-   */
   async createProgramPolicy(
     organizationId: string,
     userTagId: string,
@@ -353,34 +312,36 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Creates delegated access policy for limited transaction permissions
-   */
   async createDelegatedAccessPolicy(
     organizationId: string,
     delegatedUserId: string,
-    allowedAddresses: string | string[], // Accept single address or array
-    maxAmount?: number
+    allowedAddresses: string | string[],
+    maxAmount?: number,
+    instructionLimit?: number
   ): Promise<Policy> {
-    // Convert to array if single address provided (backward compatibility)
     const addresses = Array.isArray(allowedAddresses) ? allowedAddresses : [allowedAddresses];
 
-    // Build address condition for multiple addresses
     const addressCondition = addresses.length === 1
       ? `transfer.to == '${addresses[0]}'`
       : `(${addresses.map(addr => `transfer.to == '${addr}'`).join(' || ')})`;
 
-    let condition = `
-      solana.tx.spl_transfers.any(transfer,
-        ${addressCondition}
-      )
-    `;
-
+    let transferCondition = addressCondition;
     if (maxAmount) {
+      transferCondition = `${addressCondition} && transfer.amount <= ${maxAmount}`;
+    }
+
+    let condition = '';
+    if (instructionLimit) {
+      condition = `
+        solana.tx.instructions.count() <= ${instructionLimit} &&
+        solana.tx.spl_transfers.any(transfer,
+          ${transferCondition}
+        )
+      `;
+    } else {
       condition = `
         solana.tx.spl_transfers.any(transfer,
-          ${addressCondition} &&
-          transfer.amount <= ${maxAmount}
+          ${transferCondition}
         )
       `;
     }
@@ -389,19 +350,22 @@ export class PolicyService {
       ? `${addresses.slice(0, 3).join(', ')}... (${addresses.length} total)`
       : addresses.join(', ');
 
+    const notes = [
+      `Delegated access policy allowing SPL transfers to whitelisted addresses: ${addressList}`,
+      maxAmount ? `max amount ${maxAmount}` : null,
+      instructionLimit ? `max ${instructionLimit} instructions` : null
+    ].filter(Boolean).join(', ');
+
     return this.createPolicy(
       organizationId,
       'Delegated Access - Limited Transaction Policy',
       POLICY_EFFECTS.ALLOW,
       `approvers.any(user, user.id == '${delegatedUserId}')`,
       condition,
-      `Delegated access policy allowing SPL transfers to whitelisted addresses: ${addressList}${maxAmount ? ` with max amount ${maxAmount}` : ''}`
+      notes
     );
   }
 
-  /**
-   * Creates NFT minting policy
-   */
   async createNFTMintPolicy(
     organizationId: string,
     userTagId: string,
@@ -427,9 +391,6 @@ export class PolicyService {
     );
   }
 
-  /**
-   * Gets policy templates for common use cases
-   */
   getPolicyTemplates(): PolicyTemplate[] {
     return [
       {

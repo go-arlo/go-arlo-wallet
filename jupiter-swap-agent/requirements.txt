@@ -1,0 +1,22 @@
+# Core dependencies
+langchain-anthropic==1.0.2
+langchain-core==1.0.3
+langgraph==1.0.2
+
+# HTTP requests and utilities
+requests==2.32.5
+python-dotenv==1.0.1
+
+# Cryptography for Turnkey API signing
+cryptography>=46.0.3
+
+# No additional async utilities needed - LangGraph handles async internally
+
+# Optional: For enhanced development experience
+# ipython==8.29.0
+# black==24.10.0
+# flake8==7.1.1
+
+# For testing (optional)
+pytest==8.4.2
+pytest-asyncio==1.2.0
