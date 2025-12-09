@@ -12,7 +12,6 @@ import time
 import logging
 from typing import Dict, Any, Optional
 
-# Enable debug logging
 logging.basicConfig(level=logging.INFO)
 
 from dotenv import load_dotenv
@@ -32,7 +31,6 @@ model = ChatAnthropic(
     temperature=0.1
 )
 
-# Initialize wallet manager
 wallet_manager = WalletManager(
     delegated_wallet_address=os.getenv("DELEGATED_WALLET_ADDRESS"),
     turnkey_organization_id=os.getenv("TURNKEY_ORGANIZATION_ID"),
@@ -44,7 +42,6 @@ wallet_manager = WalletManager(
     solana_rpc_url=os.getenv("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
 )
 
-# Initialize Jupiter swap tool
 jupiter_tool = JupiterSwapTool(wallet_manager)
 
 
@@ -75,17 +72,21 @@ def execute_swap(
     action: str,
     token_symbol: str,
     token_address: str,
-    amount_usd: float,
+    sol_amount: float = None,
+    token_amount: float = None,
+    amount_usd: float = None,
     slippage_bps: int = 50
 ) -> str:
     """
-    Execute a Jupiter swap transaction with USD amount.
+    Execute a Jupiter swap transaction.
 
     Args:
-        action: "buy" or "sell"
+        action: "buy" (SOL->Token) or "sell" (Token->SOL)
         token_symbol: Symbol of the token (e.g., "BONK")
         token_address: Mint address of the token
-        amount_usd: Amount in USD to trade
+        sol_amount: Amount of SOL to swap (for buy actions, default)
+        token_amount: Amount of tokens to swap (for sell actions)
+        amount_usd: Amount in USD to trade (alternative to native amounts)
         slippage_bps: Slippage tolerance in basis points (default 50 = 0.5%)
     """
     try:
@@ -93,19 +94,29 @@ def execute_swap(
             action=action.upper(),
             token_symbol=token_symbol,
             token_address=token_address,
+            sol_amount=sol_amount,
+            token_amount=token_amount,
             amount_usd=amount_usd,
             slippage_bps=slippage_bps
         )
 
         if result["success"]:
             tx_hash = result["transaction_hash"]
+            amount_str = ""
+            if sol_amount is not None:
+                amount_str = f"{sol_amount} SOL"
+            elif token_amount is not None:
+                amount_str = f"{token_amount} {token_symbol}"
+            elif amount_usd is not None:
+                amount_str = f"${amount_usd}"
+
             return f"""
 ✅ Swap executed successfully!
 
 Transaction Hash: {tx_hash}
 Action: {action.upper()}
 Token: {token_symbol}
-Amount: ${amount_usd}
+Amount: {amount_str}
 Slippage: {slippage_bps/100}%
 
 View on Solscan: https://solscan.io/tx/{tx_hash}
@@ -139,7 +150,7 @@ def swap_sol_for_token(
         slippage_bps: Slippage tolerance in basis points (default 50 = 0.5%)
     """
     try:
-        result = jupiter_tool.execute_sol_swap(
+        result = jupiter_tool.execute_swap(
             action="BUY",
             token_symbol=token_symbol,
             token_address=token_address,
@@ -188,7 +199,7 @@ def swap_token_for_sol(
         slippage_bps: Slippage tolerance in basis points (default 50 = 0.5%)
     """
     try:
-        result = jupiter_tool.execute_sol_swap(
+        result = jupiter_tool.execute_swap(
             action="SELL",
             token_symbol=token_symbol,
             token_address=token_address,
@@ -309,7 +320,6 @@ Please configure these environment variables:
 These are needed to create API keys for delegated users.
 """
 
-        # Use provided user ID or get from environment
         delegated_user_id = user_id or os.getenv("DELEGATED_USER_ID")
 
         if not delegated_user_id:
@@ -366,10 +376,8 @@ Troubleshooting:
 def diagnose_wallet_setup() -> str:
     """Diagnose wallet configuration issues."""
     try:
-        # Check Solana balance
         balance = wallet_manager.get_sol_balance()
 
-        # Check if Turnkey keys are configured
         has_turnkey_keys = bool(
             wallet_manager.turnkey_api_public_key and
             wallet_manager.turnkey_api_private_key
@@ -408,7 +416,6 @@ def diagnose_wallet_setup() -> str:
 3. Ensure you have a delegated user ID from Turnkey
 """
 
-        # Test Solana RPC connection
         try:
             _ = wallet_manager._make_solana_rpc_request("getHealth")
             diagnosis += "\n✅ **Solana RPC connection healthy**"
@@ -430,8 +437,6 @@ Error: {str(e)}
 4. Run generate_api_keys.py if you haven't already
 """
 
-
-# System prompt for the agent
 SYSTEM_PROMPT = """
 You are a Jupiter Swap Agent that helps users perform token swaps on Solana using a delegated wallet.
 
@@ -489,14 +494,12 @@ async def chat_with_agent():
 
     agent = create_react_agent(model, tools)
 
-    # Initialize conversation
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     print("🚀 Jupiter Swap Agent initialized!")
     print("💰 Delegated wallet ready for trading")
     print("Type 'help' for commands, 'exit' to quit\n")
 
-    # Show initial wallet status
     try:
         balance = wallet_manager.get_sol_balance()
         print(f"💼 Current wallet balance: {balance:.4f} SOL")
@@ -547,10 +550,8 @@ Examples:
             if not user_input:
                 continue
 
-            # Add user message
             messages.append({"role": "user", "content": user_input})
 
-            # Get agent response
             print("🤖 Agent: ", end="", flush=True)
 
             response = await agent.ainvoke({"messages": messages})
@@ -558,7 +559,6 @@ Examples:
 
             print(ai_message)
 
-            # Add agent response to history
             messages.append({"role": "assistant", "content": ai_message})
 
         except KeyboardInterrupt:
@@ -570,21 +570,16 @@ Examples:
 
 def main():
     """Entry point for the application."""
-    # Validate environment variables
+
     required_vars = [
         "DELEGATED_WALLET_ADDRESS",
         "TURNKEY_ORGANIZATION_ID",
+        "TURNKEY_API_PUBLIC_KEY",
+        "TURNKEY_API_PRIVATE_KEY",
         "ANTHROPIC_API_KEY"
     ]
 
-    # Check if we have API keys for creating/signing
-    optional_but_recommended = [
-        "TURNKEY_API_PUBLIC_KEY",
-        "TURNKEY_API_PRIVATE_KEY"
-    ]
-
     missing_vars = [var for var in required_vars if not os.getenv(var)]
-    missing_optional = [var for var in optional_but_recommended if not os.getenv(var)]
 
     if missing_vars:
         print("❌ Missing required environment variables:")
@@ -593,14 +588,6 @@ def main():
         print("\nPlease check your .env file and try again.")
         return
 
-    if missing_optional:
-        print("⚠️  Missing optional environment variables (needed for API key creation):")
-        for var in missing_optional:
-            print(f"  - {var}")
-        print("\nThese are needed for creating API keys and signing transactions directly.")
-        print("The agent will still work through the wallet delegation service.\n")
-
-    # Check system health
     try:
         if wallet_manager.health_check():
             print("✅ System connections healthy")
@@ -611,7 +598,6 @@ def main():
         print(f"⚠️ Health check warning: {e}")
         print("The agent will still work but some features may be limited")
 
-    # Start the chat loop
     try:
         asyncio.run(chat_with_agent())
     except KeyboardInterrupt:

@@ -18,7 +18,7 @@ An AI-powered agent that executes Jupiter swaps on Solana using a delegated wall
 ```
 ┌─────────────────┐         ┌──────────────────┐
 │   AI Agent      │         │  Turnkey API     │
-│                 │◄────────►│                  │
+│                 │◄───────►│                  │
 │ - LangGraph     │         │ - Transaction    │
 │ - Claude LLM    │         │   Signing        │
 │ - Tool Calling  │         │ - API Keys       │
@@ -29,7 +29,7 @@ An AI-powered agent that executes Jupiter swaps on Solana using a delegated wall
 ┌─────────────────┐         ┌──────────────────┐
 │  Jupiter API    │         │   Solana RPC     │
 │                 │         │                  │
-│ - Swap Quotes   │         │ - Balance Check  │
+│ - Swap Quotes   │────────►│ - Balance Check  │
 │ - Routing       │         │ - Transaction    │
 │ - Price Feed    │         │   Submission     │
 └─────────────────┘         └──────────────────┘
@@ -88,7 +88,7 @@ cp .env.example .env
 
 ### 4. Python Environment
 
-Python 3.11+ is required.
+Python 3.13+ is required.
 
 ## Installation
 
@@ -156,7 +156,7 @@ Python 3.11+ is required.
 
    # Complete "Create Delegated Access"
    # Note down the User ID and Wallet Address
-   # Stop the service after setup - it's no longer needed
+   # Stop the service after setup
    ```
 
 2. **Configure API Keys**: Generate keys and create them in Turnkey:
@@ -205,7 +205,6 @@ The agent will:
 2. Check Turnkey and Solana RPC connectivity
 3. Display current wallet balance
 4. Start the interactive chat interface
-5. Show warnings if API keys are not configured
 
 **Note**: The agent is fully self-contained and does not require the wallet delegation service to be running.
 
@@ -268,8 +267,6 @@ Agent: Token Information:
 - `diagnose` - Check wallet and configuration status
 - `help` - Show available commands
 - `exit` - Quit the agent
-
-**Note**: API keys should be configured using `generate_api_keys.py --setup` before starting the agent.
 
 ### Natural Language Interface
 
@@ -462,13 +459,6 @@ python main.py
 ✅ Jupiter swap successful!
 Transaction hash: [hash]
 ```
-
-### Performance Notes
-
-- **Initial Startup**: ~2-3 seconds to validate connections
-- **Swap Execution**: ~5-10 seconds including quote, signing, and submission
-- **Balance Checks**: ~1-2 seconds
-- **Price Queries**: ~1 second
 
 ### Security Considerations
 

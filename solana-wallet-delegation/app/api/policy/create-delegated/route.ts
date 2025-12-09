@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       updateRootQuorum
     } = body;
 
-    console.log('Creating policy with addresses:', allowedAddresses);
+    console.info('Creating policy with addresses:', allowedAddresses);
 
     if (!organizationId || !delegatedUserId) {
       return NextResponse.json(
@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate that at least one allowed address is provided
     if (!allowedAddresses || allowedAddresses.length === 0) {
       return NextResponse.json(
         { error: 'At least one allowed address must be provided' },
@@ -62,9 +61,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Final allowed addresses:', allowedAddresses);
+    console.info('Final allowed addresses:', allowedAddresses);
 
-    // Create the delegated access policy with restrictions
     const policy = await policyService.createDelegatedAccessPolicy(
       organizationId,
       delegatedUserId,
@@ -75,7 +73,6 @@ export async function POST(request: NextRequest) {
 
     let rootQuorumUpdated = false;
 
-    // If requested, update root quorum to exclude delegated user
     if (updateRootQuorum && endUserId) {
       try {
         await walletService.updateRootQuorum(organizationId, endUserId, 1);

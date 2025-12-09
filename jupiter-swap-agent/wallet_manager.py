@@ -22,7 +22,7 @@ from generate_api_keys import create_api_stamp
 logger = logging.getLogger(__name__)
 
 class WalletManager:
-    """Manages delegated wallet operations directly through Turnkey and Solana APIs."""
+    """Manages delegated wallet operations directly through Turnkey."""
 
     def __init__(
         self,

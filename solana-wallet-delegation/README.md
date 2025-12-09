@@ -98,7 +98,7 @@ open http://localhost:3000
 
 ### Step 1: Access the Demo
 
-1. Navigate to [http://localhost:3000](http://localhost:3000)
+1. Navigate to [http://localhost:3000]
 2. Click the **"Delegated Access Demo"** button
 3. You'll be taken to the delegated access configuration page
 

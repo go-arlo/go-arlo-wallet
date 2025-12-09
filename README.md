@@ -9,7 +9,7 @@ Go Arlo Wallet provides a wallet delegation implementation that enables:
 - **Secure Sub-Organization Management**: Create isolated wallet environments with granular access control
 - **Policy-Based Restrictions**: Implement spending limits, token allowlists, and risk thresholds
 - **Automated Trading**: AI agent that executes Jupiter swaps while respecting configured policies
-- **Non-Custodial Security**: Private keys managed by Turnkey's secure infrastructure
+- **Security**: Private keys managed by Turnkey's secure infrastructure
 
 ## Architecture
 
@@ -50,8 +50,8 @@ An AI-powered Python agent that:
 
 ## Prerequisites
 
-- Node.js 18+ for the wallet delegation service
-- Python 3.11+ for the Jupiter swap agent
+- Node.js 24+ for the wallet delegation service
+- Python 3.13+ for the Jupiter swap agent
 - Turnkey account with API access
 - Anthropic API key for the AI agent (or other preferred model)
 - Solana wallet with SOL for transaction fees
@@ -121,7 +121,7 @@ go-arlo-wallet/
 ## Dependencies
 
 ### Wallet Delegation Service
-- **Next.js 14**: React framework for the web interface
+- **Next.js 15**: React framework for the web interface
 - **TypeScript**: Type-safe development
 - **Turnkey SDK**: Wallet infrastructure integration
 - **Solana Web3.js**: Blockchain interactions
@@ -158,17 +158,12 @@ This infrastructure is ideal for:
 ## Contributing
 
 Contributions are welcome! Please ensure:
-- Code follows the existing style conventions
 - Tests pass for all changes
 - Documentation is updated as needed
 - Security best practices are followed
 
-## License
-
-[License details to be added]
-
 ## Support
 
-For detailed component documentation, refer to:
+For detailed documentation, refer to:
 - [Wallet Delegation Documentation](/solana-wallet-delegation/README.md)
 - [Jupiter Agent Documentation](/jupiter-swap-agent/README.md)
