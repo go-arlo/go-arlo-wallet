@@ -127,6 +127,9 @@ class WalletManager:
             }
         }
 
+        # IMPORTANT: Must send the EXACT same JSON that was signed (compact, no spaces)
+        request_json = json.dumps(request_body, separators=(',', ':'))
+
         stamp = self.create_api_stamp_instance(request_body)
 
         headers = {
@@ -136,7 +139,7 @@ class WalletManager:
 
         response = requests.post(
             f"{self.turnkey_api_base_url}/public/v1/submit/sign_transaction",
-            json=request_body,
+            data=request_json,  # Use data= with pre-encoded JSON, not json=
             headers=headers,
             timeout=30
         )
@@ -256,6 +259,7 @@ class WalletManager:
                 raise Exception(f"Failed to get quote: {quote_response.text}")
 
             quote = quote_response.json()
+            logger.debug(f"Got quote: {quote.get('outAmount')} output for {quote.get('inAmount')} input")
 
             # Step 2: Get swap transaction from Jupiter
             swap_request = {
@@ -266,16 +270,10 @@ class WalletManager:
                 "dynamicComputeUnitLimit": True
             }
 
-            swap_headers = {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "User-Agent": "Jupiter-Swap-Agent/1.0"
-            }
-
             swap_response = requests.post(
                 "https://lite-api.jup.ag/swap/v1/swap",
                 json=swap_request,
-                headers=swap_headers,
+                headers={"Content-Type": "application/json", "Accept": "application/json"},
                 timeout=30
             )
 
@@ -285,13 +283,9 @@ class WalletManager:
             swap_data = swap_response.json()
             unsigned_transaction_b64 = swap_data["swapTransaction"]
 
-            logger.info(f"Received base64 transaction from Jupiter: {unsigned_transaction_b64[:100]}...")
-
-            import base64
+            # Convert base64 to hex for Turnkey
             transaction_bytes = base64.b64decode(unsigned_transaction_b64)
             unsigned_transaction_hex = transaction_bytes.hex()
-
-            logger.info(f"Converted to hex for Turnkey: {unsigned_transaction_hex[:100]}...")
 
             # Step 3: Sign transaction with Turnkey
             signed_result = self.sign_transaction(
@@ -307,21 +301,17 @@ class WalletManager:
             if not signed_transaction:
                 raise Exception("Failed to get signed transaction from Turnkey")
 
-            logger.info(f"Signed transaction from Turnkey: {signed_transaction[:100]}...")
+            # Convert hex back to base64 for Solana
+            signed_bytes = bytes.fromhex(signed_transaction)
+            signed_transaction_b64 = base64.b64encode(signed_bytes).decode()
 
-            try:
-                signed_bytes = bytes.fromhex(signed_transaction)
-                signed_transaction_b64 = base64.b64encode(signed_bytes).decode()
-                logger.info(f"Converted signed transaction to base64: {signed_transaction_b64[:100]}...")
-            except Exception as e:
-                logger.error(f"Error converting signed transaction: {e}")
-                raise Exception(f"Failed to convert signed transaction: {e}")
-
-            # Step 4: Submit transaction
+            # Step 4: Submit transaction (skip preflight to avoid stale simulation)
             send_result = self._make_solana_rpc_request(
                 "sendTransaction",
-                [signed_transaction_b64, {"encoding": "base64", "skipPreflight": False}]
+                [signed_transaction_b64, {"encoding": "base64", "skipPreflight": True}]
             )
+
+            logger.info(f"Transaction submitted: {send_result}")
 
             return {
                 "success": True,
@@ -332,13 +322,17 @@ class WalletManager:
             }
 
         except Exception as e:
-            import traceback
-            error_details = traceback.format_exc()
-            logger.error(f"Swap execution failed: {e}\nDetails: {error_details}")
+            error_msg = str(e)
+            # Simplify common errors
+            if "SlippageToleranceExceeded" in error_msg or "0x9" in error_msg:
+                error_msg = "Slippage exceeded - price moved, try again"
+            elif "403" in error_msg or "OUTCOME_DENY" in error_msg:
+                error_msg = "Transaction denied by policy"
+
+            logger.warning(f"Swap failed: {error_msg}")
             return {
                 "success": False,
-                "error": str(e),
-                "error_details": error_details
+                "error": error_msg
             }
 
     def get_sol_balance(self) -> float:
@@ -407,3 +401,170 @@ class WalletManager:
                 logger.warning(f"Could not create API keys: {e}")
 
         return {"status": "configured", "userId": user_id}
+
+    def create_smart_contract_interface(
+        self,
+        idl_path: str = None,
+        idl_data: Dict[str, Any] = None,
+        label: str = "Jupiter Aggregator",
+        notes: str = "Jupiter swap program IDL",
+        use_main_keys: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Upload a smart contract interface (IDL) to Turnkey.
+
+        Args:
+            idl_path: Path to the IDL JSON file (optional if idl_data provided)
+            idl_data: IDL data as dict (optional if idl_path provided)
+            label: Label for the smart contract interface
+            notes: Notes for the smart contract interface
+            use_main_keys: Use MAIN keys (End User with root access) instead of delegated keys
+
+        Returns:
+            Response from Turnkey API
+        """
+        if use_main_keys:
+            if not self.main_turnkey_api_private_key or not self.main_turnkey_api_public_key:
+                raise ValueError("Main Turnkey API keys not configured (End User credentials)")
+            private_key = self.main_turnkey_api_private_key
+            public_key = self.main_turnkey_api_public_key
+        else:
+            if not self.turnkey_api_private_key or not self.turnkey_api_public_key:
+                raise ValueError("Turnkey API keys not configured")
+            private_key = self.turnkey_api_private_key
+            public_key = self.turnkey_api_public_key
+
+        if idl_data:
+            idl = idl_data
+        elif idl_path:
+            with open(idl_path, 'r') as f:
+                idl = json.load(f)
+        else:
+            raise ValueError("Either idl_path or idl_data must be provided")
+
+        # Get the program address from the IDL
+        smart_contract_address = idl.get("address", "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4")
+
+        request_body = {
+            "type": "ACTIVITY_TYPE_CREATE_SMART_CONTRACT_INTERFACE",
+            "timestampMs": str(int(time.time() * 1000)),
+            "organizationId": self.turnkey_organization_id,
+            "parameters": {
+                "smartContractAddress": smart_contract_address,
+                "smartContractInterface": json.dumps(idl, separators=(',', ':')),
+                "type": "SMART_CONTRACT_INTERFACE_TYPE_SOLANA",
+                "label": label,
+                "notes": notes
+            }
+        }
+
+        # IMPORTANT: Must send the EXACT same JSON that was signed (compact, no spaces)
+        request_json = json.dumps(request_body, separators=(',', ':'))
+
+        stamp = create_api_stamp(request_body, private_key, public_key)
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-Stamp": stamp
+        }
+
+        response = requests.post(
+            f"{self.turnkey_api_base_url}/public/v1/submit/create_smart_contract_interface",
+            data=request_json,
+            headers=headers,
+            timeout=30
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+            activity = result.get("activity", {})
+
+            if activity.get("status") == "ACTIVITY_STATUS_PENDING":
+                return self._poll_activity(activity.get("id"))
+
+            logger.info(f"Smart contract interface created: {activity.get('id')}")
+            return result
+        else:
+            logger.error(f"Smart contract interface creation failed: {response.text}")
+            raise Exception(
+                f"Smart contract interface creation failed: {response.status_code} - {response.text}"
+            )
+
+    def update_policy(
+        self,
+        policy_id: str,
+        policy_name: str = None,
+        policy_effect: str = None,
+        policy_condition: str = None,
+        policy_consensus: str = None,
+        policy_notes: str = None
+    ) -> Dict[str, Any]:
+        """
+        Update an existing policy in Turnkey.
+
+        Args:
+            policy_id: The ID of the policy to update
+            policy_name: New name for the policy (optional)
+            policy_effect: New effect - EFFECT_ALLOW or EFFECT_DENY (optional)
+            policy_condition: New condition expression (optional)
+            policy_consensus: New consensus expression (optional)
+            policy_notes: New notes for the policy (optional)
+
+        Returns:
+            Update result from Turnkey API
+        """
+        # Policy updates require main/root admin keys, not delegated keys
+        if not self.main_turnkey_api_private_key or not self.main_turnkey_api_public_key:
+            raise ValueError("Main Turnkey API keys not configured for policy update")
+
+        parameters = {"policyId": policy_id}
+
+        if policy_name is not None:
+            parameters["policyName"] = policy_name
+        if policy_effect is not None:
+            parameters["policyEffect"] = policy_effect
+        if policy_condition is not None:
+            parameters["policyCondition"] = policy_condition
+        if policy_consensus is not None:
+            parameters["policyConsensus"] = policy_consensus
+        if policy_notes is not None:
+            parameters["policyNotes"] = policy_notes
+
+        request_body = {
+            "type": "ACTIVITY_TYPE_UPDATE_POLICY_V2",
+            "timestampMs": str(int(time.time() * 1000)),
+            "organizationId": self.turnkey_organization_id,
+            "parameters": parameters
+        }
+
+        request_json = json.dumps(request_body, separators=(',', ':'))
+
+        stamp = create_api_stamp(
+            request_body,
+            self.main_turnkey_api_private_key,
+            self.main_turnkey_api_public_key
+        )
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-Stamp": stamp
+        }
+
+        response = requests.post(
+            f"{self.turnkey_api_base_url}/public/v1/submit/update_policy",
+            data=request_json,
+            headers=headers,
+            timeout=30
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+            activity = result.get("activity", {})
+
+            if activity.get("status") == "ACTIVITY_STATUS_PENDING":
+                return self._poll_activity(activity.get("id"))
+
+            return result
+        else:
+            logger.error(f"Policy update failed: {response.text}")
+            raise Exception(f"Policy update failed: {response.status_code} - {response.text}")

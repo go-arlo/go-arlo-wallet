@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
       allowedAddresses,
       maxTransactionAmount,
       instructionLimit,
-      updateRootQuorum
+      updateRootQuorum,
+      enableJupiterSwaps
     } = body;
 
     console.info('Creating policy with addresses:', allowedAddresses);
@@ -62,13 +63,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.info('Final allowed addresses:', allowedAddresses);
+    console.info('Jupiter swaps enabled:', enableJupiterSwaps);
 
     const policy = await policyService.createDelegatedAccessPolicy(
       organizationId,
       delegatedUserId,
       allowedAddresses,
       maxTransactionAmount,
-      instructionLimit
+      instructionLimit,
+      enableJupiterSwaps
     );
 
     let rootQuorumUpdated = false;

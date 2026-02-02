@@ -317,7 +317,8 @@ export class PolicyService {
     delegatedUserId: string,
     allowedAddresses: string | string[],
     maxAmount?: number,
-    instructionLimit?: number
+    instructionLimit?: number,
+    enableJupiterSwaps?: boolean
   ): Promise<Policy> {
     const addresses = Array.isArray(allowedAddresses) ? allowedAddresses : [allowedAddresses];
 
@@ -330,20 +331,24 @@ export class PolicyService {
       transferCondition = `${addressCondition} && transfer.amount <= ${maxAmount}`;
     }
 
+    const splTransferCondition = `(solana.tx.spl_transfers.any(transfer, ${transferCondition}))`;
+
+    const jupiterCondition = enableJupiterSwaps
+      ? `(solana.tx.instructions.any(i, i.program_key == 'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' && i.parsed_instruction_data.instruction_name == 'route'))`
+      : null;
+
+    let mainCondition = '';
+    if (jupiterCondition) {
+      mainCondition = `(${splTransferCondition} || ${jupiterCondition})`;
+    } else {
+      mainCondition = splTransferCondition;
+    }
+
     let condition = '';
     if (instructionLimit) {
-      condition = `
-        solana.tx.instructions.count() <= ${instructionLimit} &&
-        solana.tx.spl_transfers.any(transfer,
-          ${transferCondition}
-        )
-      `;
+      condition = `solana.tx.instructions.count() <= ${instructionLimit} && ${mainCondition}`;
     } else {
-      condition = `
-        solana.tx.spl_transfers.any(transfer,
-          ${transferCondition}
-        )
-      `;
+      condition = mainCondition;
     }
 
     const addressList = addresses.length > 3
@@ -353,16 +358,69 @@ export class PolicyService {
     const notes = [
       `Delegated access policy allowing SPL transfers to whitelisted addresses: ${addressList}`,
       maxAmount ? `max amount ${maxAmount}` : null,
-      instructionLimit ? `max ${instructionLimit} instructions` : null
+      instructionLimit ? `max ${instructionLimit} instructions` : null,
+      enableJupiterSwaps ? 'Jupiter swaps enabled' : null
     ].filter(Boolean).join(', ');
+
+    const policyName = enableJupiterSwaps
+      ? 'Delegated Access - Jupiter Swap Policy'
+      : 'Delegated Access - Limited Transaction Policy';
 
     return this.createPolicy(
       organizationId,
-      'Delegated Access - Limited Transaction Policy',
+      policyName,
       POLICY_EFFECTS.ALLOW,
       `approvers.any(user, user.id == '${delegatedUserId}')`,
       condition,
       notes
+    );
+  }
+
+  async createJupiterSwapPolicy(
+    organizationId: string,
+    delegatedUserId: string,
+    maxInstructions: number = 20,
+    maxTransferAmount?: number
+  ): Promise<Policy> {
+    // Jupiter swap transactions can have many instructions and interact with various DEX programs
+    // This policy allows transactions with a reasonable instruction limit
+    let condition = `solana.tx.instructions.count() <= ${maxInstructions}`;
+
+    if (maxTransferAmount) {
+      condition = `
+        solana.tx.instructions.count() <= ${maxInstructions} &&
+        solana.tx.spl_transfers.all(transfer, transfer.amount <= ${maxTransferAmount})
+      `;
+    }
+
+    const notes = [
+      'Jupiter swap policy allowing DEX transactions',
+      `max ${maxInstructions} instructions`,
+      maxTransferAmount ? `max transfer amount ${maxTransferAmount}` : null
+    ].filter(Boolean).join(', ');
+
+    return this.createPolicy(
+      organizationId,
+      'Delegated Access - Jupiter Swap Policy',
+      POLICY_EFFECTS.ALLOW,
+      `approvers.any(user, user.id == '${delegatedUserId}')`,
+      condition,
+      notes
+    );
+  }
+
+  async createFullAccessPolicy(
+    organizationId: string,
+    delegatedUserId: string
+  ): Promise<Policy> {
+    // Allows all Solana transactions for this user - use with caution
+    return this.createPolicy(
+      organizationId,
+      'Delegated Access - Full Transaction Policy',
+      POLICY_EFFECTS.ALLOW,
+      `approvers.any(user, user.id == '${delegatedUserId}')`,
+      'true',
+      'Full access policy allowing all transactions for delegated user'
     );
   }
 

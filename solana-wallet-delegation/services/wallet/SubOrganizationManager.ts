@@ -102,14 +102,22 @@ export class SubOrganizationManager {
         userId,
       });
 
+      const user = response.user;
+      const createdAt = user.createdAt?.seconds
+        ? new Date(parseInt(user.createdAt.seconds) * 1000)
+        : new Date();
+      const updatedAt = user.updatedAt?.seconds
+        ? new Date(parseInt(user.updatedAt.seconds) * 1000)
+        : new Date();
+
       return {
-        id: response.userId,
-        name: response.userName,
-        email: response.userEmail || undefined,
-        tags: response.userTags || [],
-        isRoot: response.userTags?.includes(USER_TAGS.ADMIN) || false,
-        createdAt: new Date(response.createdAt),
-        updatedAt: new Date(response.updatedAt),
+        id: user.userId,
+        name: user.userName,
+        email: user.userEmail || undefined,
+        tags: user.userTags || [],
+        isRoot: user.userTags?.includes(USER_TAGS.ADMIN) || false,
+        createdAt,
+        updatedAt,
       };
     } catch (error) {
       console.error('Failed to get user:', error);
@@ -123,15 +131,24 @@ export class SubOrganizationManager {
         organizationId,
       });
 
-      return response.users.map(user => ({
-        id: user.userId,
-        name: user.userName,
-        email: user.userEmail || undefined,
-        tags: user.userTags || [],
-        isRoot: user.userTags?.includes(USER_TAGS.ADMIN) || false,
-        createdAt: new Date(user.createdAt),
-        updatedAt: new Date(user.updatedAt),
-      }));
+      return response.users.map(user => {
+        const createdAt = user.createdAt?.seconds
+          ? new Date(parseInt(user.createdAt.seconds) * 1000)
+          : new Date();
+        const updatedAt = user.updatedAt?.seconds
+          ? new Date(parseInt(user.updatedAt.seconds) * 1000)
+          : new Date();
+
+        return {
+          id: user.userId,
+          name: user.userName,
+          email: user.userEmail || undefined,
+          tags: user.userTags || [],
+          isRoot: user.userTags?.includes(USER_TAGS.ADMIN) || false,
+          createdAt,
+          updatedAt,
+        };
+      });
     } catch (error) {
       console.error('Failed to list users:', error);
       return [];
@@ -289,7 +306,7 @@ export class SubOrganizationManager {
         organizationId,
       });
 
-      const rootUsers = (config.rootUsers || []).filter(id => id !== userId);
+      const rootUsers = (config.rootUsers || []).filter((id: string) => id !== userId);
 
       await this.apiClient.updateOrganizationConfig({
         organizationId,

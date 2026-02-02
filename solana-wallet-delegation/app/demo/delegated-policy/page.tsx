@@ -21,14 +21,17 @@ export default function DelegatedPolicyDemo() {
   const [isCreating, setIsCreating] = useState(false);
   const [result, setResult] = useState<PolicyResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const defaultTransferAmount = parseInt(process.env.NEXT_PUBLIC_TRANSFER_AMOUNT || '1000000000');
   const [formData, setFormData] = useState({
     organizationId: '',
     delegatedUserId: '',
     endUserId: '',
     allowedAddresses: [] as string[],
-    maxTransactionAmount: 1000000, // 0.001 SOL in lamports
-    instructionLimit: 5,
+    maxTransactionAmount: defaultTransferAmount,
+    instructionLimit: 20,
     updateRootQuorum: true,
+    enableJupiterSwaps: true,
+    uploadJupiterIdl: true,
   });
   const [longTermStorageAddress, setLongTermStorageAddress] = useState<string>('');
   const [loadingAddress, setLoadingAddress] = useState(false);
@@ -88,6 +91,28 @@ export default function DelegatedPolicyDemo() {
     setError(null);
 
     try {
+      // Upload Jupiter IDL first if enabled
+      if (formData.enableJupiterSwaps && formData.uploadJupiterIdl) {
+        console.log('Uploading Jupiter IDL...');
+        const idlResponse = await fetch('/api/smart-contract/upload-idl', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ organizationId: formData.organizationId }),
+        });
+
+        const idlData = await idlResponse.json();
+
+        if (!idlResponse.ok) {
+          console.warn('IDL upload failed (may already exist):', idlData.error);
+          // Continue anyway - IDL might already be uploaded
+        } else {
+          console.log('Jupiter IDL uploaded successfully');
+        }
+      }
+
+      // Create the policy
       const response = await fetch('/api/policy/create-delegated', {
         method: 'POST',
         headers: {
@@ -297,10 +322,55 @@ export default function DelegatedPolicyDemo() {
                   value={formData.instructionLimit}
                   onChange={(e) => setFormData(prev => ({ ...prev, instructionLimit: parseInt(e.target.value) }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  max="10"
+                  max="30"
                   min="1"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Jupiter swaps typically need 10-20 instructions
+                </p>
               </div>
+
+              <div className="mt-4">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="enableJupiterSwaps"
+                    checked={formData.enableJupiterSwaps}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      enableJupiterSwaps: e.target.checked,
+                      uploadJupiterIdl: e.target.checked ? prev.uploadJupiterIdl : false
+                    }))}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="enableJupiterSwaps" className="ml-2 block text-sm text-gray-900">
+                    Enable Jupiter Swap Transactions
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Allow transactions to Jupiter aggregator program (JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4)
+                </p>
+              </div>
+
+              {formData.enableJupiterSwaps && (
+                <div className="mt-4 ml-6">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="uploadJupiterIdl"
+                      checked={formData.uploadJupiterIdl}
+                      onChange={(e) => setFormData(prev => ({ ...prev, uploadJupiterIdl: e.target.checked }))}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="uploadJupiterIdl" className="ml-2 block text-sm text-gray-900">
+                      Upload Jupiter IDL to Turnkey
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Required for policy to parse Jupiter instruction names (route, exact_out_route, etc.)
+                  </p>
+                </div>
+              )}
 
             </div>
 

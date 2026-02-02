@@ -12,9 +12,18 @@ import time
 import logging
 from typing import Dict, Any, Optional
 
-logging.basicConfig(level=logging.INFO)
+# Reduce logging noise
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(levelname)s: %(message)s'
+)
+# Keep wallet_manager at INFO for transaction status
+logging.getLogger('wallet_manager').setLevel(logging.INFO)
 
 from dotenv import load_dotenv
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool

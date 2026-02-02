@@ -44,6 +44,17 @@ export class WalletService {
         throw new Error('TURNKEY_ORG_ID or NEXT_PUBLIC_ORGANIZATION_ID environment variable is required');
       }
 
+      const mainApiPublicKey = process.env.TURNKEY_API_PUBLIC_KEY;
+      const useMainKeyForEndUser = mainApiPublicKey &&
+        mainApiPublicKey.toLowerCase() !== delegatedUserPublicKey.toLowerCase();
+
+      if (mainApiPublicKey && !useMainKeyForEndUser) {
+        console.warn(
+          'TURNKEY_API_PUBLIC_KEY is the same as delegatedUserPublicKey. ' +
+          'End User will not have an API key. Generate a separate key pair for End User admin access.'
+        );
+      }
+
       // Create sub-organization with two root users
       const subOrgResponse = await this.apiClient.createSubOrganization({
         organizationId: mainOrgId,
@@ -64,7 +75,13 @@ export class WalletService {
           {
             userName: 'End User',
             userEmail: endUserEmail,
-            apiKeys: [],
+            apiKeys: useMainKeyForEndUser ? [
+              {
+                apiKeyName: 'Admin API Key',
+                publicKey: mainApiPublicKey,
+                curveType: 'API_KEY_CURVE_P256',
+              },
+            ] : [],
             authenticators: [],
             oauthProviders: [],
           },
@@ -157,7 +174,13 @@ export class WalletService {
         accounts: this.generateWalletAccounts(config),
       });
 
-      const accounts: WalletAccount[] = response.accounts.map((acc, index) => ({
+      // Fetch full account details after creation
+      const accountsResponse = await this.apiClient.getWalletAccounts({
+        organizationId,
+        walletId: response.walletId,
+      });
+
+      const accounts: WalletAccount[] = accountsResponse.accounts.map((acc, index) => ({
         address: acc.address,
         publicKey: acc.publicKey || '',
         curve: 'CURVE_ED25519',
@@ -172,7 +195,7 @@ export class WalletService {
         name: walletName,
         organizationId,
         accounts,
-        createdAt: new Date(response.createdAt),
+        createdAt: new Date(),
       };
     } catch (error) {
       console.error('Failed to create wallet:', error);
@@ -202,12 +225,17 @@ export class WalletService {
         accountType: index === 0 ? 'TRADING' : 'LONG_TERM_STORAGE',
       }));
 
+      const createdAtTimestamp = walletResponse.wallet.createdAt;
+      const createdAt = createdAtTimestamp?.seconds
+        ? new Date(parseInt(createdAtTimestamp.seconds) * 1000)
+        : new Date();
+
       return {
         id: walletResponse.wallet.walletId,
         name: walletResponse.wallet.walletName,
         organizationId,
         accounts,
-        createdAt: new Date(walletResponse.wallet.createdAt),
+        createdAt,
       };
     } catch (error) {
       console.error('Failed to get wallet:', error);
@@ -221,8 +249,15 @@ export class WalletService {
         organizationId,
       });
 
-      return response.wallets.map(wallet => {
-        const accounts: WalletAccount[] = (wallet.accounts || []).map((acc, index) => ({
+      const wallets: Wallet[] = [];
+      for (const wallet of response.wallets) {
+        // Fetch accounts for each wallet
+        const accountsResponse = await this.apiClient.getWalletAccounts({
+          organizationId,
+          walletId: wallet.walletId,
+        });
+
+        const accounts: WalletAccount[] = accountsResponse.accounts.map((acc, index) => ({
           address: acc.address,
           publicKey: acc.publicKey || '',
           curve: 'CURVE_ED25519',
@@ -232,14 +267,21 @@ export class WalletService {
           accountType: index === 0 ? 'TRADING' : 'LONG_TERM_STORAGE',
         }));
 
-        return {
+        const createdAtTimestamp = wallet.createdAt;
+        const createdAt = createdAtTimestamp?.seconds
+          ? new Date(parseInt(createdAtTimestamp.seconds) * 1000)
+          : new Date();
+
+        wallets.push({
           id: wallet.walletId,
           name: wallet.walletName,
           organizationId,
           accounts,
-          createdAt: new Date(wallet.createdAt),
-        };
-      });
+          createdAt,
+        });
+      }
+
+      return wallets;
     } catch (error) {
       console.error('Failed to list wallets:', error);
       return [];
@@ -263,7 +305,7 @@ export class WalletService {
     walletId: string,
     organizationId: string,
     targetPublicKey: string
-  ): Promise<{ mnemonic: string; encryptedBundle: string }> {
+  ): Promise<{ exportBundle: string }> {
     try {
       const response = await this.apiClient.exportWallet({
         organizationId,
@@ -272,8 +314,7 @@ export class WalletService {
       });
 
       return {
-        mnemonic: response.mnemonic || '',
-        encryptedBundle: response.encryptedBundle,
+        exportBundle: response.exportBundle,
       };
     } catch (error) {
       console.error('Failed to export wallet:', error);
@@ -285,6 +326,7 @@ export class WalletService {
     organizationId: string,
     walletName: string,
     encryptedBundle: string,
+    userId: string,
     config: WalletConfig
   ): Promise<Wallet> {
     try {
@@ -292,10 +334,17 @@ export class WalletService {
         organizationId,
         walletName,
         encryptedBundle,
+        userId,
         accounts: this.generateWalletAccounts(config),
       });
 
-      const accounts: WalletAccount[] = response.accounts.map((acc, index) => ({
+      // Fetch full account details after import
+      const accountsResponse = await this.apiClient.getWalletAccounts({
+        organizationId,
+        walletId: response.walletId,
+      });
+
+      const accounts: WalletAccount[] = accountsResponse.accounts.map((acc, index) => ({
         address: acc.address,
         publicKey: acc.publicKey || '',
         curve: 'CURVE_ED25519',
@@ -310,7 +359,7 @@ export class WalletService {
         name: walletName,
         organizationId,
         accounts,
-        createdAt: new Date(response.createdAt),
+        createdAt: new Date(),
       };
     } catch (error) {
       console.error('Failed to import wallet:', error);
@@ -336,7 +385,18 @@ export class WalletService {
         }],
       });
 
-      const account = response.accounts[0];
+      // Response contains addresses array, fetch full account details
+      const address = response.addresses[0];
+      const accountsResponse = await this.apiClient.getWalletAccounts({
+        organizationId,
+        walletId,
+      });
+
+      const account = accountsResponse.accounts.find(acc => acc.address === address);
+      if (!account) {
+        throw new Error('Created account not found');
+      }
+
       return {
         address: account.address,
         publicKey: account.publicKey || '',
