@@ -42,6 +42,23 @@ An AI-powered Python agent that:
 - **Risk Controls**: Automatic rejection of high-risk operations
 - **Time-Based Restrictions**: Configure trading windows
 
+### Policy Management
+Policies can be created via the web interface and updated programmatically:
+
+```bash
+cd jupiter-swap-agent
+
+# Set required environment variables
+export POLICY_ID="your-policy-id"
+export DELEGATED_USER_ID="your-user-id"
+export TRANSFER_ADDRESS_1="allowed-address-1"
+export TRANSFER_ADDRESS_2="allowed-address-2"
+export TRANSFER_AMOUNT="1000000000"  # In lamports
+
+# Update the policy
+python update_policy_script.py
+```
+
 ### Security Model
 - Private keys never leave Turnkey's secure infrastructure
 - API authentication using P256 signature scheme
@@ -86,6 +103,9 @@ cp .env.example .env
 ```bash
 # Generate P256 keys for API authentication
 python generate_api_keys.py --setup
+
+# Or non-interactive mode for scripting
+python generate_api_keys.py --setup --non-interactive
 ```
 
 ### Step 4: Test the Integration
@@ -112,7 +132,9 @@ go-arlo-wallet/
 ├── jupiter-swap-agent/          # Python AI trading agent
 │   ├── wallet_manager.py       # Turnkey wallet integration
 │   ├── main.py                 # Agent entry point
-│   ├── generate_api_keys.py   # API key management
+│   ├── generate_api_keys.py    # API key management
+│   ├── update_policy_script.py # Policy updates after creation
+│   ├── upload_jupiter_idl.py   # Upload Jupiter IDL to Turnkey
 │   └── README.md               # Agent documentation
 │
 └── README.md                    # This file

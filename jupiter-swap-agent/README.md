@@ -66,16 +66,23 @@ Complete the one-time setup:
 Generate P256 key pair for Turnkey API authentication:
 
 ```bash
+# Interactive mode (prompts to save to .env)
 python generate_api_keys.py --setup
+
+# Non-interactive mode (for scripting)
+python generate_api_keys.py --setup --non-interactive
+
+# Specify user ID directly
+python generate_api_keys.py --setup --user-id "your-user-id" --non-interactive
 ```
 
 This will:
 - Generate a P256 (secp256r1) key pair
 - Display the keys for your `.env` file
-- Optionally append them to your `.env` file
+- Optionally append them to your `.env` file (interactive mode only)
 - Create API keys directly in Turnkey (with `--setup` flag)
 
-**Note**: You need main organization API keys to create delegated user API keys. Ensure you have both main and delegated API keys configured in your `.env` file.
+**Note**: You need main/parent organization API keys to create delegated user API keys. The script supports both `PARENT_TURNKEY_API_*` and `MAIN_TURNKEY_API_*` environment variables (with fallback).
 
 ### 3. Environment Setup
 
@@ -135,8 +142,20 @@ Python 3.13+ is required.
 | `TURNKEY_API_PRIVATE_KEY` | P256 private key (hex) for delegated user API access |
 | `MAIN_TURNKEY_API_PUBLIC_KEY` | Main organization P256 public key (hex) |
 | `MAIN_TURNKEY_API_PRIVATE_KEY` | Main organization P256 private key (hex) |
+| `PARENT_TURNKEY_API_PUBLIC_KEY` | Alternative to MAIN_TURNKEY_API_PUBLIC_KEY |
+| `PARENT_TURNKEY_API_PRIVATE_KEY` | Alternative to MAIN_TURNKEY_API_PRIVATE_KEY |
 | `MAIN_ORGANIZATION` | Main Turnkey organization ID |
 | `DELEGATED_USER_ID` | Turnkey delegated user ID |
+| `END_USER_ID` | Alternative to DELEGATED_USER_ID |
+
+#### Policy Update Configuration (For update_policy_script.py)
+
+| Variable | Description |
+|----------|-------------|
+| `POLICY_ID` | The policy ID to update (from Turnkey dashboard) |
+| `TRANSFER_ADDRESS_1` | First allowed transfer address |
+| `TRANSFER_ADDRESS_2` | Second allowed transfer address |
+| `TRANSFER_AMOUNT` | Maximum transfer amount in lamports (1 SOL = 1,000,000,000) |
 
 #### Optional Configuration
 
@@ -357,6 +376,40 @@ Agent: ❌ Swap failed: Policy violation - Daily spending limit exceeded
 Current limit: $100, Attempted: $150
 Please try a smaller amount or wait for the limit to reset.
 ```
+
+### Updating Policies After Creation
+
+Policies can be updated programmatically using `update_policy_script.py`:
+
+```bash
+# 1. Set required environment variables in .env or export them
+export POLICY_ID="your-policy-id-from-turnkey-dashboard"
+export DELEGATED_USER_ID="your-delegated-user-id"
+export TRANSFER_ADDRESS_1="2Kqy6n2dF7Q7jvRe4AxQdFvSfxBYRrYDZXas8x5xQ5NP"
+export TRANSFER_ADDRESS_2="Cw1HbvbXVSELPQDUwEGoJqgsZPA5gbQLQ1g5sSrVKnc5"
+export TRANSFER_AMOUNT="1000000000"  # 1 SOL in lamports
+
+# 2. Run the update script
+python update_policy_script.py
+```
+
+The script will update the policy with:
+- **Consensus rule**: Only the delegated user can approve transactions
+- **Condition**: Allows SPL transfers to specified addresses up to the amount limit, plus Jupiter swap transactions
+
+**Finding your Policy ID**:
+- Check the Turnkey dashboard under your sub-organization's policies
+- Or note it when creating the policy via the web interface
+
+### Uploading Jupiter IDL
+
+To enable Jupiter swap transaction parsing in policies:
+
+```bash
+python upload_jupiter_idl.py
+```
+
+This uploads the Jupiter program IDL to Turnkey, allowing policies to recognize Jupiter instruction names (route, exact_out_route, etc.).
 
 ## Common Token Addresses
 
