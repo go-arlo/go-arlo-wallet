@@ -144,7 +144,6 @@ Python 3.13+ is required.
 | `MAIN_TURNKEY_API_PRIVATE_KEY` | Main organization P256 private key (hex) |
 | `PARENT_TURNKEY_API_PUBLIC_KEY` | Alternative to MAIN_TURNKEY_API_PUBLIC_KEY |
 | `PARENT_TURNKEY_API_PRIVATE_KEY` | Alternative to MAIN_TURNKEY_API_PRIVATE_KEY |
-| `MAIN_ORGANIZATION` | Main Turnkey organization ID |
 | `DELEGATED_USER_ID` | Turnkey delegated user ID |
 | `END_USER_ID` | Alternative to DELEGATED_USER_ID |
 
@@ -187,15 +186,7 @@ Python 3.13+ is required.
    python generate_api_keys.py --setup
    ```
 
-3. **Test Configuration**:
-   ```bash
-   # Test delegated user authentication
-   python test_updated_wallet_manager.py
-
-   # Should show successful authentication and balance
-   ```
-
-4. **Verify Complete Setup**:
+3. **Verify Complete Setup**:
    ```bash
    # Start the agent and verify everything works
    python main.py
@@ -334,14 +325,6 @@ If you encounter issues:
    - Check Turnkey dashboard for existing user ID
    - Or create new delegated user via demo interface
 
-3. **Test Setup**:
-   ```bash
-   # Test the complete setup
-   python test_updated_wallet_manager.py
-
-   # Should show successful authentication and balance check
-   ```
-
 ## Automated Transaction Signing
 
 The agent can automatically sign transactions using the delegated wallet through Turnkey's API. This enables:
@@ -442,9 +425,9 @@ This uploads the Jupiter program IDL to Turnkey, allowing policies to recognize 
 
 **Solution**:
 - Verify you have main organization API keys configured
-- Check that `MAIN_ORGANIZATION` environment variable is set
+  (`MAIN_TURNKEY_API_*` or `PARENT_TURNKEY_API_*`)
 - Use main organization credentials to create sub-organization API keys
-- Run: `python test_main_keys.py` to test main org authentication
+- Regenerate API keys using `python generate_api_keys.py --setup`
 
 #### 3. Transaction Encoding Errors
 
@@ -477,40 +460,20 @@ pip install -r requirements.txt
 - Wrong Solana RPC endpoint
 
 **Solution**:
-```bash
-# Test wallet manager directly
-python test_updated_wallet_manager.py
-
-# Check wallet address and network in .env file
-```
+- Verify `DELEGATED_WALLET_ADDRESS` in your `.env` file
+- Check Solana RPC connectivity
+- Start the agent and run `diagnose` to check wallet status
 
 ### Testing Your Setup
 
-#### Complete System Test
-
 ```bash
-# 1. Test main organization authentication
-python test_main_keys.py
+# Test Jupiter API connectivity
+python -m pytest tests/test_jupiter_response.py
 
-# 2. Test delegated user authentication and balance
-python test_updated_wallet_manager.py
-
-# 3. Test Jupiter API connectivity
-python test_jupiter_response.py
-
-# 4. Run the complete agent
+# Run the complete agent and use the diagnose command
 python main.py
-```
-
-#### Expected Output for Working Setup
-
-```
-🧪 Testing delegated user authentication with updated WalletManager...
-✅ Delegated user authentication successful!
-
-🔄 Testing Jupiter swap functionality...
-✅ Jupiter swap successful!
-Transaction hash: [hash]
+# In the agent chat:
+# > diagnose
 ```
 
 ### Security Considerations

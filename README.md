@@ -14,18 +14,29 @@ Go Arlo Wallet provides a wallet delegation implementation that enables:
 ## Architecture
 
 ### 1. Solana Wallet Delegation (`/solana-wallet-delegation`)
-A Next.js application that provides:
-- Sub-organization creation and management
-- Delegated user creation with customizable policies
-- Policy templates for common use cases (spending limits, token restrictions)
-- RESTful APIs for wallet operations
-- Demo interfaces for testing delegation flows
+A Next.js application with three core services:
+
+**WalletService** — Sub-organization and wallet lifecycle management:
+- Create isolated sub-organizations with dual root users (delegated + end user)
+- Multi-account wallets (TRADING and LONG_TERM_STORAGE)
+- Wallet import/export with encryption and BIP32 account derivation
+- Balance querying via Solana RPC
+
+**PolicyService** — Granular transaction policy creation and enforcement:
+- 15+ policy templates for common and advanced use cases
+- CRUD operations for managing policies on Turnkey
+- Composable condition expressions evaluated at the signing layer
+
+**DelegationService** — Agent delegation lifecycle management:
+- Process and approve delegation requests from agents
+- Permission-scoped access (TRANSFER, SWAP, STAKE, MINT_NFT)
+- Quota tracking, expiration enforcement, and emergency revocation
 
 ### 2. Jupiter Swap Agent (`/jupiter-swap-agent`)
 An AI-powered Python agent that:
 - Executes token swaps through Jupiter's DEX aggregator
-- Enforces wallet policies automatically
-- Provides natural language interface for trading
+- Enforces wallet policies automatically at the Turnkey signing layer
+- Provides natural language interface for trading via LangGraph + Claude
 - Integrates directly with Turnkey for transaction signing
 
 ## Key Features
@@ -37,10 +48,33 @@ An AI-powered Python agent that:
 - Non-expiring API key authentication using P256 cryptography
 
 ### Policy Enforcement
-- **Spending Limits**: Daily and per-transaction limits
-- **Token Allowlists**: Restrict trading to approved tokens only
-- **Risk Controls**: Automatic rejection of high-risk operations
-- **Time-Based Restrictions**: Configure trading windows
+Policies are enforced at the cryptographic signing layer through Turnkey — not in
+application code. Available policy types include:
+
+- **Admin Access**: Unrestricted access for admin-tagged users
+- **Trader**: Instruction-limited trading with per-transaction spend caps
+- **Deposit Only**: Restrict to deposits into long-term storage
+- **Deny Arbitrary Transfers**: Block transfers to non-whitelisted addresses
+- **SPL Token Transfer**: Restrict by token mint, recipient, and amount
+- **Delegated Access**: Multi-address whitelisting with amount and instruction limits
+- **Jupiter Swap**: DEX interaction with configurable instruction counts
+- **Program Restriction**: Limit transactions to specific Solana programs
+- **Time-Bound**: Policies that auto-expire at a given timestamp
+- **Quota**: Daily and weekly spending limits
+- **NFT Mint**: Collection-scoped minting restrictions
+- **Full Access**: Unrestricted access for a delegated user (use with caution)
+- **Emergency Freeze**: Deny-all policy for emergency situations
+
+Deny policies always take precedence — if any `EFFECT_DENY` policy matches, the
+transaction is rejected regardless of allow policies.
+
+### Delegation Management
+Agents receive scoped credentials — not open keys. The DelegationService handles:
+- **Agent Verification**: Validate agent identity before granting access
+- **Scoped Permissions**: Grant only the actions an agent needs (TRANSFER, SWAP, etc.)
+- **Quota Tracking**: Monitor daily/weekly/monthly usage against limits
+- **Revocation**: Revoke individual delegations or use the emergency kill-switch
+- **Auto-Expiry**: Delegations expire automatically based on configured duration
 
 ### Policy Management
 Policies can be created via the web interface and updated programmatically:
@@ -59,10 +93,35 @@ export TRANSFER_AMOUNT="1000000000"  # In lamports
 python update_policy_script.py
 ```
 
+#### Jupiter IDL Upload
+To enable instruction-level policy parsing for Jupiter swaps, upload the Jupiter
+program IDL to Turnkey:
+
+```bash
+cd jupiter-swap-agent
+python upload_jupiter_idl.py
+```
+
+This allows policies to reference parsed instruction data (e.g., `instruction_name == 'route'`)
+rather than raw bytes.
+
+### API Endpoints
+The delegation service exposes the following REST APIs:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/wallet/create-delegated` | Create sub-org with delegated user |
+| GET | `/api/wallet/get-storage-address` | Fetch long-term storage address |
+| POST | `/api/policy/create-delegated` | Create delegated access policy |
+| POST | `/api/policy/create-jupiter` | Create Jupiter swap policy |
+| POST | `/api/policy/manage` | List, update, or delete policies |
+| POST | `/api/smart-contract/upload-idl` | Upload program IDL to Turnkey |
+
 ### Security Model
 - Private keys never leave Turnkey's secure infrastructure
 - API authentication using P256 signature scheme
-- Policy enforcement at the infrastructure level
+- Policy enforcement at the cryptographic signing layer, not in application code
+- Deny policies always override allow policies (explicit deny precedence)
 - Complete audit trail of all operations
 
 ## Prerequisites
@@ -123,19 +182,32 @@ python main.py
 ```
 go-arlo-wallet/
 ├── solana-wallet-delegation/    # Next.js delegation service
-│   ├── app/                     # Application routes and UI
-│   ├── services/                # Core business logic
-│   │   ├── policy/             # Policy management
-│   │   └── wallet/             # Wallet operations
-│   └── README.md               # Detailed setup guide
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── wallet/         # Wallet creation & query endpoints
+│   │   │   ├── policy/         # Policy CRUD & Jupiter endpoints
+│   │   │   └── smart-contract/ # IDL upload endpoint
+│   │   ├── demo/
+│   │   │   ├── delegated-access/   # Sub-org & user creation demo
+│   │   │   └── delegated-policy/   # Policy configuration demo
+│   │   └── admin/
+│   │       └── policy/         # Policy management interface
+│   ├── services/
+│   │   ├── policy/             # PolicyService - 15+ policy templates
+│   │   ├── wallet/             # WalletService & SubOrganizationManager
+│   │   ├── delegation/         # DelegationService - agent lifecycle
+│   │   └── auth/               # SessionManager
+│   └── README.md
 │
 ├── jupiter-swap-agent/          # Python AI trading agent
+│   ├── main.py                 # LangGraph agent entry point
 │   ├── wallet_manager.py       # Turnkey wallet integration
-│   ├── main.py                 # Agent entry point
-│   ├── generate_api_keys.py    # API key management
+│   ├── jupiter_swap_tool.py    # Jupiter DEX interaction
+│   ├── generate_api_keys.py    # P256 API key management
 │   ├── update_policy_script.py # Policy updates after creation
 │   ├── upload_jupiter_idl.py   # Upload Jupiter IDL to Turnkey
-│   └── README.md               # Agent documentation
+│   ├── idl.json                # Jupiter program IDL
+│   └── README.md
 │
 └── README.md                    # This file
 ```
