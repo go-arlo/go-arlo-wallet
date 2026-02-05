@@ -24,7 +24,7 @@ export default function DelegatedAccessDemo() {
   const [formData, setFormData] = useState({
     name: 'Delegated Access Demo',
     endUserEmail: 'enduser@example.com',
-    delegatedUserPublicKey: '03e0691d059c9c84656931f852360f4b2ae5a72f8b102c30c603f8cb085b4f220e',
+    delegatedUserPublicKey: '',
     enableTradingAccount: true,
     enableLongTermStorage: true,
   });

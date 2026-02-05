@@ -314,7 +314,7 @@ export default function PolicyManagement() {
                 value={formData.organizationId}
                 onChange={(e) => setFormData(prev => ({ ...prev, organizationId: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                placeholder="e.g., e4404550-c5c8-4300-ae0a-f095a40548a7"
+                placeholder=""
               />
               <p className="text-xs text-gray-500 mt-1">
                 Use TURNKEY_ORGANIZATION_ID from your .env.local
@@ -332,7 +332,7 @@ export default function PolicyManagement() {
                   value={formData.policyId}
                   onChange={(e) => setFormData(prev => ({ ...prev, policyId: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                  placeholder="e.g., 5da4d6d4-16ee-4884-bae0-1f8278a49815"
+                  placeholder=""
                 />
               </div>
             )}
@@ -376,7 +376,7 @@ export default function PolicyManagement() {
                 onChange={(e) => setFormData(prev => ({ ...prev, consensus: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                 rows={2}
-                placeholder="e.g., approvers.any(user, user.id == 'eb6c9418-f838-42ad-a438-d9e9034a0c84')"
+                placeholder="e.g., approvers.any(user, user.id == '')"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Use DELEGATED_USER_ID for the user.id value

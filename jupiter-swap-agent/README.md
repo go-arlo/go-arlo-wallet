@@ -385,8 +385,8 @@ Policies can be updated programmatically using `update_policy_script.py`:
 # 1. Set required environment variables in .env or export them
 export POLICY_ID="your-policy-id-from-turnkey-dashboard"
 export DELEGATED_USER_ID="your-delegated-user-id"
-export TRANSFER_ADDRESS_1="2Kqy6n2dF7Q7jvRe4AxQdFvSfxBYRrYDZXas8x5xQ5NP"
-export TRANSFER_ADDRESS_2="Cw1HbvbXVSELPQDUwEGoJqgsZPA5gbQLQ1g5sSrVKnc5"
+export TRANSFER_ADDRESS_1=""
+export TRANSFER_ADDRESS_2=""
 export TRANSFER_AMOUNT="1000000000"  # 1 SOL in lamports
 
 # 2. Run the update script
