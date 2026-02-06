@@ -9,8 +9,8 @@ This script:
 Environment variables required for --setup:
 - TURNKEY_ORGANIZATION_ID: The sub-organization ID
 - DELEGATED_USER_ID or END_USER_ID: The user ID to add the API key to
-- PARENT_TURNKEY_API_PUBLIC_KEY or MAIN_TURNKEY_API_PUBLIC_KEY: Public key for auth
-- PARENT_TURNKEY_API_PRIVATE_KEY or MAIN_TURNKEY_API_PRIVATE_KEY: Private key for auth
+- MAIN_TURNKEY_API_PUBLIC_KEY: Public key for auth
+- MAIN_TURNKEY_API_PRIVATE_KEY: Private key for auth
 
 Usage examples:
   # Interactive mode (prompts to save keys)
@@ -304,17 +304,10 @@ def main():
     )
     args = parser.parse_args()
 
-    # Load credentials (support PARENT_TURNKEY_API_* with fallback to MAIN_TURNKEY_API_*)
     organization_id = os.getenv("TURNKEY_ORGANIZATION_ID")
     user_id = args.user_id or os.getenv("DELEGATED_USER_ID") or os.getenv("END_USER_ID")
-    auth_private_key = (
-        os.getenv("PARENT_TURNKEY_API_PRIVATE_KEY") or
-        os.getenv("MAIN_TURNKEY_API_PRIVATE_KEY")
-    )
-    auth_public_key = (
-        os.getenv("PARENT_TURNKEY_API_PUBLIC_KEY") or
-        os.getenv("MAIN_TURNKEY_API_PUBLIC_KEY")
-    )
+    auth_private_key = os.getenv("MAIN_TURNKEY_API_PRIVATE_KEY")
+    auth_public_key = os.getenv("MAIN_TURNKEY_API_PUBLIC_KEY")
 
     print("=" * 60)
     print("P256 Key Generator for Turnkey API")
@@ -336,8 +329,8 @@ def main():
             if os.path.exists('.env'):
                 with open('.env', 'a') as f:
                     f.write(f"\n# Generated Turnkey API Keys - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-                    f.write(f"# TURNKEY_API_PUBLIC_KEY={public_key_hex}\n")
-                    f.write(f"# TURNKEY_API_PRIVATE_KEY={private_key_hex}\n")
+                    f.write(f"# DELEGATED_TURNKEY_API_PUBLIC_KEY={public_key_hex}\n")
+                    f.write(f"# DELEGATED_TURNKEY_API_PRIVATE_KEY={private_key_hex}\n")
                 print("Keys appended to .env (commented out)")
             else:
                 print(".env file not found")
@@ -353,9 +346,9 @@ def main():
             if not organization_id:
                 print("  - TURNKEY_ORGANIZATION_ID")
             if not auth_private_key:
-                print("  - PARENT_TURNKEY_API_PRIVATE_KEY or MAIN_TURNKEY_API_PRIVATE_KEY")
+                print("  - MAIN_TURNKEY_API_PRIVATE_KEY")
             if not auth_public_key:
-                print("  - PARENT_TURNKEY_API_PUBLIC_KEY or MAIN_TURNKEY_API_PUBLIC_KEY")
+                print("  - MAIN_TURNKEY_API_PUBLIC_KEY")
         else:
             print(f"Organization ID: {organization_id}")
             print(f"Auth public key (compressed): {auth_public_key}")
@@ -394,9 +387,9 @@ def main():
         if not user_id:
             missing.append("DELEGATED_USER_ID or END_USER_ID")
         if not auth_private_key:
-            missing.append("PARENT_TURNKEY_API_PRIVATE_KEY or MAIN_TURNKEY_API_PRIVATE_KEY")
+            missing.append("MAIN_TURNKEY_API_PRIVATE_KEY")
         if not auth_public_key:
-            missing.append("PARENT_TURNKEY_API_PUBLIC_KEY or MAIN_TURNKEY_API_PUBLIC_KEY")
+            missing.append("MAIN_TURNKEY_API_PUBLIC_KEY")
 
         if missing:
             print("Missing required environment variables:")

@@ -26,8 +26,8 @@ export class DelegationService {
   constructor() {
     this.client = new Turnkey({
       apiBaseUrl: process.env.NEXT_PUBLIC_TURNKEY_API_BASE_URL!,
-      apiPublicKey: process.env.TURNKEY_API_PUBLIC_KEY!,
-      apiPrivateKey: process.env.TURNKEY_API_PRIVATE_KEY!,
+      apiPublicKey: process.env.DELEGATED_TURNKEY_API_PUBLIC_KEY!,
+      apiPrivateKey: process.env.DELEGATED_TURNKEY_API_PRIVATE_KEY!,
       defaultOrganizationId: process.env.NEXT_PUBLIC_ORGANIZATION_ID!,
     });
 

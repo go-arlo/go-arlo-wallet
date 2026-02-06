@@ -19,8 +19,8 @@ load_dotenv()
 wallet_manager = WalletManager(
     delegated_wallet_address=os.getenv("DELEGATED_WALLET_ADDRESS"),
     turnkey_organization_id=os.getenv("TURNKEY_ORGANIZATION_ID"),
-    turnkey_api_public_key=os.getenv("TURNKEY_API_PUBLIC_KEY"),
-    turnkey_api_private_key=os.getenv("TURNKEY_API_PRIVATE_KEY"),
+    turnkey_api_public_key=os.getenv("DELEGATED_TURNKEY_API_PUBLIC_KEY"),
+    turnkey_api_private_key=os.getenv("DELEGATED_TURNKEY_API_PRIVATE_KEY"),
     main_turnkey_api_public_key=os.getenv("MAIN_TURNKEY_API_PUBLIC_KEY"),
     main_turnkey_api_private_key=os.getenv("MAIN_TURNKEY_API_PRIVATE_KEY"),
     turnkey_api_base_url=os.getenv("TURNKEY_API_BASE_URL", "https://api.turnkey.com"),

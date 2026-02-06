@@ -43,8 +43,8 @@ model = ChatAnthropic(
 wallet_manager = WalletManager(
     delegated_wallet_address=os.getenv("DELEGATED_WALLET_ADDRESS"),
     turnkey_organization_id=os.getenv("TURNKEY_ORGANIZATION_ID"),
-    turnkey_api_public_key=os.getenv("TURNKEY_API_PUBLIC_KEY"),
-    turnkey_api_private_key=os.getenv("TURNKEY_API_PRIVATE_KEY"),
+    turnkey_api_public_key=os.getenv("DELEGATED_TURNKEY_API_PUBLIC_KEY"),
+    turnkey_api_private_key=os.getenv("DELEGATED_TURNKEY_API_PRIVATE_KEY"),
     main_turnkey_api_public_key=os.getenv("MAIN_TURNKEY_API_PUBLIC_KEY"),
     main_turnkey_api_private_key=os.getenv("MAIN_TURNKEY_API_PRIVATE_KEY"),
     turnkey_api_base_url=os.getenv("TURNKEY_API_BASE_URL", "https://api.turnkey.com"),
@@ -323,8 +323,8 @@ def setup_api_keys(user_id: str = None) -> str:
 ❌ Cannot setup API keys: Missing Turnkey API credentials
 
 Please configure these environment variables:
-- TURNKEY_API_PUBLIC_KEY
-- TURNKEY_API_PRIVATE_KEY
+- DELEGATED_TURNKEY_API_PUBLIC_KEY
+- DELEGATED_TURNKEY_API_PRIVATE_KEY
 
 These are needed to create API keys for delegated users.
 """
@@ -583,8 +583,8 @@ def main():
     required_vars = [
         "DELEGATED_WALLET_ADDRESS",
         "TURNKEY_ORGANIZATION_ID",
-        "TURNKEY_API_PUBLIC_KEY",
-        "TURNKEY_API_PRIVATE_KEY",
+        "DELEGATED_TURNKEY_API_PUBLIC_KEY",
+        "DELEGATED_TURNKEY_API_PRIVATE_KEY",
         "ANTHROPIC_API_KEY"
     ]
 

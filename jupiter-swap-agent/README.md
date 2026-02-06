@@ -82,7 +82,7 @@ This will:
 - Optionally append them to your `.env` file (interactive mode only)
 - Create API keys directly in Turnkey (with `--setup` flag)
 
-**Note**: You need main/parent organization API keys to create delegated user API keys. The script supports both `PARENT_TURNKEY_API_*` and `MAIN_TURNKEY_API_*` environment variables (with fallback).
+**Note**: You need main organization API keys (`MAIN_TURNKEY_API_*`) to create delegated user API keys.
 
 ### 3. Environment Setup
 
@@ -138,12 +138,10 @@ Python 3.13+ is required.
 
 | Variable | Description |
 |----------|-------------|
-| `TURNKEY_API_PUBLIC_KEY` | P256 public key (hex) for delegated user API access |
-| `TURNKEY_API_PRIVATE_KEY` | P256 private key (hex) for delegated user API access |
+| `DELEGATED_TURNKEY_API_PUBLIC_KEY` | P256 public key (hex) for delegated user API access |
+| `DELEGATED_TURNKEY_API_PRIVATE_KEY` | P256 private key (hex) for delegated user API access |
 | `MAIN_TURNKEY_API_PUBLIC_KEY` | Main organization P256 public key (hex) |
 | `MAIN_TURNKEY_API_PRIVATE_KEY` | Main organization P256 private key (hex) |
-| `PARENT_TURNKEY_API_PUBLIC_KEY` | Alternative to MAIN_TURNKEY_API_PUBLIC_KEY |
-| `PARENT_TURNKEY_API_PRIVATE_KEY` | Alternative to MAIN_TURNKEY_API_PRIVATE_KEY |
 | `DELEGATED_USER_ID` | Turnkey delegated user ID |
 | `END_USER_ID` | Alternative to DELEGATED_USER_ID |
 
@@ -424,8 +422,7 @@ This uploads the Jupiter program IDL to Turnkey, allowing policies to recognize 
 **Error**: Issues creating API keys for delegated user
 
 **Solution**:
-- Verify you have main organization API keys configured
-  (`MAIN_TURNKEY_API_*` or `PARENT_TURNKEY_API_*`)
+- Verify you have main organization API keys configured (`MAIN_TURNKEY_API_*`)
 - Use main organization credentials to create sub-organization API keys
 - Regenerate API keys using `python generate_api_keys.py --setup`
 

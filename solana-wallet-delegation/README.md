@@ -59,8 +59,8 @@ Edit `.env.local` with your Turnkey credentials:
 
 ```env
 # Turnkey API Configuration
-TURNKEY_API_PUBLIC_KEY=your_public_key_here
-TURNKEY_API_PRIVATE_KEY=your_private_key_here
+DELEGATED_TURNKEY_API_PUBLIC_KEY=your_public_key_here
+DELEGATED_TURNKEY_API_PRIVATE_KEY=your_private_key_here
 NEXT_PUBLIC_TURNKEY_API_BASE_URL=https://api.turnkey.com
 NEXT_PUBLIC_ORGANIZATION_ID=your_organization_id_here
 
@@ -81,7 +81,7 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=optional_for_basic_testing
 Before running the demo, ensure you have:
 - ✅ Created a Turnkey account at [https://app.turnkey.com](https://app.turnkey.com)
 - ✅ Generated P-256 API keys in your Turnkey dashboard
-- ✅ Added `TURNKEY_API_PUBLIC_KEY` and `TURNKEY_API_PRIVATE_KEY` to `.env.local`
+- ✅ Added `DELEGATED_TURNKEY_API_PUBLIC_KEY` and `DELEGATED_TURNKEY_API_PRIVATE_KEY` to `.env.local`
 - ✅ Added your `NEXT_PUBLIC_ORGANIZATION_ID` to `.env.local`
 
 ### 4. Start the Application
@@ -297,7 +297,7 @@ The delegated access policy is created with:
 
 **Issue**: "Authentication failed" or "Invalid API credentials"
 - **Solution**: Verify you have created a Turnkey account and generated P-256 API keys
-- **Solution**: Ensure `TURNKEY_API_PUBLIC_KEY` and `TURNKEY_API_PRIVATE_KEY` are correctly set in `.env.local`
+- **Solution**: Ensure `DELEGATED_TURNKEY_API_PUBLIC_KEY` and `DELEGATED_TURNKEY_API_PRIVATE_KEY` are correctly set in `.env.local`
 - **Solution**: Confirm your `NEXT_PUBLIC_ORGANIZATION_ID` matches your Turnkey organization
 
 **Issue**: Cannot create sub-organization
